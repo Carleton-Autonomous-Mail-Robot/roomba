@@ -1,0 +1,11 @@
+<launch>
+  <node name="actionTranslator" pkg="saviRoomba" type="actionTranslator.py" />
+  <!-- <node name="driverLineSensor" pkg="saviRoomba" type="driverLineSensor.py" /> -->
+  <!-- <node name="logger" pkg="saviRoomba" type="logger.py" /> -->
+  <node name="navigator" pkg="saviRoomba" type="navigator.py" />
+  <!-- <node name="perceptionTranslatorBattery" pkg="saviRoomba" type="perceptionTranslatorBattery.py" /> -->
+  <!-- <node name="perceptionTranslatorLine" pkg="saviRoomba" type="perceptionTranslatorLine.py" /> -->
+  <!-- <node name="perceptionTranslatorQr" pkg="saviRoomba" type="perceptionTranslatorQr.py" /> -->
+  <!-- <node name="driverCamera" pkg="saviRoomba" type="driverCamera.py" /> -->
+  <node name="driverSensors" pkg="saviRoomba" type="driverCombined.py" />
+</launch>
