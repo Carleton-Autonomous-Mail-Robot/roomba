@@ -74,7 +74,7 @@ RUN source /opt/ros/kinetic/setup.bash && \
     cd ~/create_ws && \
     catkin build
 
-ARG money
+ARG lei
 #Cloning from Roomba REPO
 RUN cd ~/create_ws/src && \
     git clone https://github.com/Carleton-Autonomous-Mail-Robot/roomba.git && \
@@ -82,8 +82,10 @@ RUN cd ~/create_ws/src && \
     git checkout development_docker && \
     cp .bashrc ~/.bashrc && \
     cp .bash_aliases ~/.bash_aliases && \
+    source /opt/ros/kinetic/setup.bash && \
     cd ~/create_ws && \
     rosdep update && \
+    rosdep install -y --from-paths src -i   && \
     catkin build
 
 #Update Python

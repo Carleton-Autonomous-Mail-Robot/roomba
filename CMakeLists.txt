@@ -14,6 +14,17 @@ find_package(catkin REQUIRED COMPONENTS
   ca_msgs
 )
 
+catkin_install_python(PROGRAMS scripts/actionTranslator.py
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+
+catkin_install_python(PROGRAMS scripts/navigator.py
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+
+  catkin_install_python(PROGRAMS scripts/driverCombined.py
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+
+
+
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
 
