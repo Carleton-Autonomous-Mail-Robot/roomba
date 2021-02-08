@@ -13,7 +13,6 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   ca_msgs
 )
-catkin_python_setup()
 
 
 ## System dependencies are found with CMake's conventions

@@ -74,7 +74,7 @@ RUN source /opt/ros/kinetic/setup.bash && \
     cd ~/create_ws && \
     catkin build
 
-ARG lei
+ARG sterling
 #Cloning from Roomba REPO
 RUN cd ~/create_ws/src && \
     git clone https://github.com/Carleton-Autonomous-Mail-Robot/roomba.git && \
@@ -103,6 +103,8 @@ RUN yes | pip3 install virtualenv
 RUN yes | pip3 install virtualenvwrapper
 
 
+#mark scripts as executable
+RUN chmod +x ~/create_ws/src/roomba/scripts/*.py
 
 
 
