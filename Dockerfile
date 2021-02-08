@@ -58,18 +58,19 @@ RUN apt-get -y install git
 RUN cd ~
 RUN mkdir -p ~/create_ws/src
 
-#Changed command because I need to be within the same dir
+#Chained command because I need to be within the same dir
 RUN cd ~/create_ws && catkin init && \
     cd ~/create_ws/src && \
     git clone https://github.com/autonomylab/create_robot.git && \
     cd ~/create_ws && \
     rosdep update
+
+
 RUN source /opt/ros/kinetic/setup.bash && \
     cd ~/create_ws && \
     rosdep install -y --from-paths src -i   && \
     cd ~/create_ws && \
     catkin build
-
 
 #Cloning from Roomba REPO
 RUN cd ~/create_ws/src && \
@@ -77,7 +78,11 @@ RUN cd ~/create_ws/src && \
     cd Roomba && \
     git checkout development_docker && \
     cp .bashrc ~/.bashrc && \
-    cp .bash_aliases ~/.bash_aliases
+    cp .bash_aliases ~/.bash_aliases && \
+    cd ~/create_ws && \
+    rosdep update && \
+    rosdep install -y --from-paths src -i && \
+    catkin build
 
 #Update Python
 RUN apt-get -y install build-essential libpq-dev libssl-dev openssl libffi-dev zlib1g-dev && \
