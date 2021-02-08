@@ -74,7 +74,9 @@ RUN source /opt/ros/kinetic/setup.bash && \
     cd ~/create_ws && \
     catkin build
 
-ARG sterling
+#This is just a dumb argument to rebuild the image before the git clone, change before a docker build if you want to rebuild from
+#this point
+ARG AUD
 #Cloning from Roomba REPO
 RUN cd ~/create_ws/src && \
     git clone https://github.com/Carleton-Autonomous-Mail-Robot/roomba.git && \
@@ -87,6 +89,16 @@ RUN cd ~/create_ws/src && \
     rosdep update && \
     rosdep install -y --from-paths src -i   && \
     catkin build
+
+RUN apt-get -y install python-pip
+RUN yes | pip install imutils
+RUN yes | pip install pip==19.3.1
+RUN yes | pip install pyzbar
+RUN yes | pip install opencv-python==4.2.0.32
+RUN apt-get -y install zbar-tools
+RUN yes | pip install RPi.GPIO
+#RUN yes | pip install zbar-py
+
 
 #Update Python
 RUN apt-get -y install build-essential libpq-dev libssl-dev openssl libffi-dev zlib1g-dev && \
@@ -101,6 +113,7 @@ RUN pip3 install --upgrade pip
 
 RUN yes | pip3 install virtualenv
 RUN yes | pip3 install virtualenvwrapper
+
 
 
 #mark scripts as executable
