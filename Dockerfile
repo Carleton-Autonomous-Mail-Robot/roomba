@@ -74,7 +74,6 @@ RUN source /opt/ros/kinetic/setup.bash && \
     cd ~/create_ws && \
     catkin build
 
-ARG cash
 #Cloning from Roomba REPO
 RUN cd ~/create_ws/src && \
     git clone https://github.com/Carleton-Autonomous-Mail-Robot/roomba.git && \
