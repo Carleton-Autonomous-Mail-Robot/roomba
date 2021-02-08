@@ -81,7 +81,6 @@ RUN cd ~/create_ws/src && \
     cp .bash_aliases ~/.bash_aliases && \
     cd ~/create_ws && \
     rosdep update && \
-    rosdep install -y --from-paths src -i && \
     catkin build
 
 #Update Python
