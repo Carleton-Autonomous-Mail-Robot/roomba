@@ -62,6 +62,8 @@ RUN mkdir -p ~/create_ws/src
 RUN cd ~/create_ws && catkin init && \
     cd ~/create_ws/src && \
     git clone https://github.com/autonomylab/create_robot.git && \
+    cd create_robot && \
+    git checkout kinetic && \
     cd ~/create_ws && \
     rosdep update
 
@@ -72,6 +74,7 @@ RUN source /opt/ros/kinetic/setup.bash && \
     cd ~/create_ws && \
     catkin build
 
+ARG cash
 #Cloning from Roomba REPO
 RUN cd ~/create_ws/src && \
     git clone https://github.com/Carleton-Autonomous-Mail-Robot/roomba.git && \
