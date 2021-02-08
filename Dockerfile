@@ -74,7 +74,7 @@ RUN source /opt/ros/kinetic/setup.bash && \
 
 #Cloning from Roomba REPO
 RUN cd ~/create_ws/src && \
-    git clone https://github.com/Carleton-Autonomous-Mail-Robot/Roomba.git && \
+    git clone https://github.com/Carleton-Autonomous-Mail-Robot/roomba.git && \
     cd Roomba && \
     git checkout development_docker && \
     cp .bashrc ~/.bashrc && \
