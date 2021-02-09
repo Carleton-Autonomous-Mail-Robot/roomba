@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import rospy
-import bluepy.btle import Scanner
+from bluepy.btle import Scanner
 from std_msgs.msg import String
 
 __measured_power = -56 #hardcoded, make some sort of beacon object
