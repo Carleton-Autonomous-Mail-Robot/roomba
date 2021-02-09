@@ -76,7 +76,7 @@ RUN source /opt/ros/kinetic/setup.bash && \
 
 #This is just a dumb argument to rebuild the image before the git clone, change before a docker build if you want to rebuild from
 #this point
-ARG AUD
+ARG CAD
 #Cloning from Roomba REPO
 RUN cd ~/create_ws/src && \
     git clone https://github.com/Carleton-Autonomous-Mail-Robot/roomba.git && \
