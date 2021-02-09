@@ -90,19 +90,19 @@ RUN cd ~/create_ws/src && \
     rosdep install -y --from-paths src -i   && \
     catkin build
 
+RUN apt-get -y install build-essential libpq-dev libssl-dev openssl libffi-dev zlib1g-dev 
 RUN apt-get -y install python-pip
 RUN yes | pip install imutils
 RUN yes | pip install pip==19.3.1
 RUN yes | pip install pyzbar
-RUN yes | pip install opencv-python
+RUN yes | pip install opencv-contrib-python==4.1.0.25
 RUN apt-get -y install zbar-tools
 RUN yes | pip install RPi.GPIO
 #RUN yes | pip install zbar-py
 
 
 #Update Python
-RUN apt-get -y install build-essential libpq-dev libssl-dev openssl libffi-dev zlib1g-dev && \
-    add-apt-repository ppa:deadsnakes/ppa && \
+RUN add-apt-repository ppa:deadsnakes/ppa && \
     apt-get update && \
     apt-get -y install python3-pip python3.7-dev && \
     apt-get -y install python3.7 && \
