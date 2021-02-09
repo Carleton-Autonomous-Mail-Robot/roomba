@@ -94,7 +94,7 @@ RUN apt-get -y install python-pip
 RUN yes | pip install imutils
 RUN yes | pip install pip==19.3.1
 RUN yes | pip install pyzbar
-RUN yes | pip install opencv-python==4.2.0.32
+RUN yes | pip install opencv-python
 RUN apt-get -y install zbar-tools
 RUN yes | pip install RPi.GPIO
 #RUN yes | pip install zbar-py
