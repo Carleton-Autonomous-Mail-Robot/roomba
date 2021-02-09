@@ -92,8 +92,8 @@ RUN cd ~/create_ws/src && \
 
 RUN apt-get -y install build-essential libpq-dev libssl-dev openssl libffi-dev zlib1g-dev 
 RUN apt-get -y install python-pip
-RUN yes | pip install RPi.GPIO
-RUN yes | pip install astar
+RUN cd ~/create_ws/src/roomba && \
+    yes | pip install -r requirements.txt
 
 
 #Update Python
