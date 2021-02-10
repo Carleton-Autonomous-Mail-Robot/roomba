@@ -48,10 +48,13 @@ def rosMain():
 
     while not rospy.is_shutdown():
         current_distances = __get_distance()
-        MAC_ADDRs = current_distances.keys()
-        for MAC in MAC_ADDRs:
-            rospy.loginfo('Beacon: '+str(MAC)+','+str(current_distances[MAC])+'m')
-            pub.publish(str(MAC) + ':' + str(current_distances[MAC]))
+        if current_distances is None:
+            pass
+        else:
+            MAC_ADDRs = current_distances.keys()
+            for MAC in MAC_ADDRs:
+                rospy.loginfo('Beacon: '+str(MAC)+','+str(current_distances[MAC])+'m')
+                pub.publish(str(MAC) + ':' + str(current_distances[MAC]))
         rate.sleep()
 
 if __name__ == '__main__':
