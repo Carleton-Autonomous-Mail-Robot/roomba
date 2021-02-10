@@ -1,6 +1,6 @@
 alias BSH='source ~/.bashrc'
 alias ps='ps aux'
-alias pull_project='cd ~/create_ws/src/roomba; git pull; cd ~/'
+alias pull_project='cd ~/create_ws/src/roomba; git pull; cd ~/; chmod +x ~/create_ws/src/roomba/scripts/*.py'
 alias T1='sudo usermod -a -G dialout $USER; cd ~/create_ws; source devel_isolated/setup.bash; roslaunch ca_driver create_2.launch;'
 alias T2='cd ~/create_ws; source devel_isolated/setup.bash; roslaunch roomba roomba.launch;'
 alias T3='cd ~/create_ws; source devel_isolated/setup.bash; rosrun roomba logger.py;'
