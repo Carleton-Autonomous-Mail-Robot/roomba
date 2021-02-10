@@ -8,4 +8,5 @@
   <!-- <node name="perceptionTranslatorQr" pkg="roomba" type="perceptionTranslatorQr.py" /> -->
   <!-- <node name="driverCamera" pkg="roomba" type="driverCamera.py" /> -->
   <!-- <node name="driverSensors" pkg="roomba" type="driverCombined.py" /> -->
+  <node pkg="roomba" type="driverBluetooth.py" name="driverBluetooth" launch-prefix="sudo"/>
 </launch>
