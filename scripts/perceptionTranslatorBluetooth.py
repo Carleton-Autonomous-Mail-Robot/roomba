@@ -16,14 +16,19 @@ Hard coded, needs to be redone
 def zone(dictionary_macs):
     macs = dictionary_macs.keys()
 
+    for i in macs:
+        rospy.loginfo('Key: '+ i+', Value: '+str(dictionary_macs[i]))
+    '''
     if 'ea:2f:93:a6:98:20' in macs and 'fc:e2:2e:62:9b:3d' in macs:
         if dictionary_macs['fc:e2:2e:62:9b:3d'] > 4.5 and dictionary_macs['ea:2f:93:a6:98:20'] > 4.5:
             rospy.loginfo('AB')
-    if 'ea:2f:93:a6:98:20' in macs and dictionary_macs['ea:2f:93:a6:98:20'] < 4.5:
+    elif 'ea:2f:93:a6:98:20' in macs and dictionary_macs['ea:2f:93:a6:98:20'] < 4.5:
         rospy.loginfo('A')
-    if 'fc:e2:2e:62:9b:3d' in macs and dictionary_macs['fc:e2:2e:62:9b:3d'] < 4.5:
+    elif 'fc:e2:2e:62:9b:3d' in macs and dictionary_macs['fc:e2:2e:62:9b:3d'] < 4.5:
         rospy.loginfo('B')
-    rospy.loginfo('Zone was called and nothing happened')
+    else:
+        rospy.loginfo('Zone was called and nothing happened')
+    '''
 
     
 def read_bluetooth(str_in):
