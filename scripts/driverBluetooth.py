@@ -13,7 +13,7 @@ __known_MACS = ['fc:e2:2e:62:9b:3d','ea:2f:93:a6:98:20'] #hardcoded, please make
     returns RSSIs in a dictionary with MAC addresses as the key
 '''
 def __read_RSSI():
-    ble_list = Scanner().scan(1.0)
+    ble_list = Scanner().scan(0.5)
     found_beacons = dict()
     for dev in ble_list:
         if dev.addr in __known_MACS:
