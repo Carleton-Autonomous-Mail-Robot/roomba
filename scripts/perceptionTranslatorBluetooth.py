@@ -14,9 +14,9 @@ from std_msgs.msg import String
 Hard coded, needs to be redone
 '''
 def zone(MAC, distance):
-    if distance < 3 and MAC == 'fc:e2:2e:62:9b:3d':
+    if distance < 3.5 and MAC == 'fc:e2:2e:62:9b:3d':
         rospy.loginfo('ZONE A')
-    elif distance < 3 and MAC == 'ea:2f:93:a6:98:20':
+    elif distance < 3.5 and MAC == 'ea:2f:93:a6:98:20':
         rospy.loginfo('ZONE B')
     elif distance > 3:
         rospy.loginfo('ZONE AB')
@@ -24,7 +24,7 @@ def zone(MAC, distance):
     
 def read_bluetooth(str_in):
     split_txt = str_in.data.split(',')
-    rospy.loginfo(split_txt[0]+','+split_txt[1])
+    zone(split_txt[0],float(split_txt[1]))
     
 
 
