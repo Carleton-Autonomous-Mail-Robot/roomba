@@ -35,7 +35,7 @@ def rosMain():
     rospy.Subscriber('beacons', String, read_bluetooth)
     rate = rospy.Rate(10)
 
-    ros.spin()
+    rospy.spin()
 
 
 if __name__ == '__main__':
