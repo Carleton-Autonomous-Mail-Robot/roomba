@@ -1,5 +1,10 @@
 #!/usr/bin/env python
+'''
 
+@author Gabriel Ciolac
+@last-edit 2021/02/10-21:39
+@contributers 
+'''
 import rospy
 from bluepy.btle import Scanner
 from std_msgs.msg import String
