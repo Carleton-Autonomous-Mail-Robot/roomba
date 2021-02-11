@@ -23,6 +23,7 @@ def zone(dictionary_macs):
         rospy.loginfo('A')
     if 'fc:e2:2e:62:9b:3d' in macs and dictionary_macs['fc:e2:2e:62:9b:3d'] < 4.5:
         rospy.loginfo('B')
+    rospy.loginfo('Zone was called and nothing happened')
 
     
 def read_bluetooth(str_in):
