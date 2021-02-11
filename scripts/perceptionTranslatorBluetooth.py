@@ -13,18 +13,28 @@ from std_msgs.msg import String
 '''
 Hard coded, needs to be redone
 '''
-def zone(MAC, distance):
-    if distance < 3.5 and MAC == 'fc:e2:2e:62:9b:3d':
-        rospy.loginfo('ZONE A')
-    elif distance < 3.5 and MAC == 'ea:2f:93:a6:98:20':
-        rospy.loginfo('ZONE B')
-    elif distance > 3:
-        rospy.loginfo('ZONE AB')
+def zone(dictionary_macs):
+    macs = dictionary_macs.keys()
+
+    if 'ea:2f:93:a6:98:20' in macs and 'fc:e2:2e:62:9b:3d' in macs:
+        if dictionary_macs['fc:e2:2e:62:9b:3d'] > 4.5 and dictionary_macs['ea:2f:93:a6:98:20'] > 4.5:
+            rospy.loginfo('AB')
+    if 'ea:2f:93:a6:98:20' in macs and dictionary_macs['ea:2f:93:a6:98:20'] < 4.5:
+        rospy.loginfo('A')
+    if 'fc:e2:2e:62:9b:3d' in macs and dictionary_macs['fc:e2:2e:62:9b:3d'] < 4.5:
+        rospy.loginfo('B')
 
     
 def read_bluetooth(str_in):
-    split_txt = str_in.data.split(',')
-    zone(split_txt[0],float(split_txt[1]))
+    split_lines = str_in.data.splitlines() #splits the published data on new line
+    dict_macs = dict()
+    for line in split_lines: #iterates through the lines
+        tmp = line.split(',') #splits line of formate MAC,distance along the period
+        dict_macs[tmp[0]] = float(tmp[1])
+
+    if len(dict_macs) == 0:
+        return
+    zone(dict_macs)
     
 
 
