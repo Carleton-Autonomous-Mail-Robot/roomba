@@ -5,7 +5,6 @@ import re
 from std_msgs.msg import String
 from std_msgs.msg import Empty
 from geometry_msgs.msg import Twist
-from driverLineSensor import getLine
 import time
 
 lastTurn = "left"

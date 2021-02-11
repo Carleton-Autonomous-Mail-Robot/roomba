@@ -12,18 +12,22 @@ from astar import AStar
 import math
 import json
 import numpy as np
+import os
 
 class RouteSearcher(AStar):
 
     # Define the map
     def __init__(self):
-            
+        #relative path to insure this works across platforms
+        script_dir = os.path.dirname(__file__)
+        rel_path_graph = 'nodeGraph.json'
+        rel_path_location = 'nodeLocations.json'
         # Load node graph
-        f = open('/home/pi/create_ws/src/saviRoomba/scripts/nodeGraph.json')
+        f = open(os.path.join(script_dir,rel_path_graph))
         self.nodeGraph = json.load(f)
         
         # Load node locations
-        f = open('/home/pi/create_ws/src/saviRoomba/scripts/nodeLocations.json')
+        f = open(os.path.join(script_dir,rel_path_location))
         self.nodeLocations = json.load(f)
         
         # assign a dummy value for the destination until we have one specified

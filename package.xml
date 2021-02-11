@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>saviRoomba</name>
+  <name>roomba</name>
   <version>0.0.0</version>
-  <description>The saviRoomba package</description>
+  <description>The roomba package</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag -->
   <!-- Example:  -->
