@@ -17,7 +17,7 @@ def zone(dictionary_macs):
     macs = dictionary_macs.keys()
 
     if 'ea:2f:93:a6:98:20' in macs and 'fc:e2:2e:62:9b:3d' in macs:
-        if dictionary_macs['fc:e2:2e:62:9b:3d'] > 4.5 and dictionary_macs['ea:2f:93:a6:98:20'] > 4.5:
+        if dictionary_macs['fc:e2:2e:62:9b:3d'] > 5 and dictionary_macs['ea:2f:93:a6:98:20'] > 5:
             rospy.loginfo('AB')
     elif 'ea:2f:93:a6:98:20' in macs and dictionary_macs['ea:2f:93:a6:98:20'] < 4.5:
         rospy.loginfo('A')
