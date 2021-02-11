@@ -4,8 +4,8 @@ import rospy
 from bluepy.btle import Scanner
 from std_msgs.msg import String
 
-__measured_power = -65.72 #hardcoded, make some sort of beacon object
-__enviromental = 1.201020985239786 #hardcoded, make some sort of beacon object
+__measured_power = -59 #hardcoded, make some sort of beacon object
+__enviromental = 2.688683131805121 #hardcoded, make some sort of beacon object
 __known_MACS = ['fc:e2:2e:62:9b:3d','ea:2f:93:a6:98:20'] #hardcoded, please make config file
 
 '''
