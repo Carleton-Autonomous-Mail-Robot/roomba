@@ -47,7 +47,7 @@ def __get_distance():
 
 
 def rosMain():
-    pub = rospy.Publisher('beacons', String, queue_size=100)
+    pub = rospy.Publisher('beacons', String, queue_size=5)
     rospy.init_node('bluetoothBeacons', anonymous=True)
     rate = rospy.Rate(10)
 
