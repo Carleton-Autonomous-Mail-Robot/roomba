@@ -59,7 +59,7 @@ def rosMain():
             MAC_ADDRs = current_distances.keys()
             for MAC in MAC_ADDRs:
                 rospy.loginfo('Beacon: '+str(MAC)+','+str(current_distances[MAC])+'m')
-                pub.publish(str(MAC) + ':' + str(current_distances[MAC]))
+                pub.publish(str(MAC) + ',' + str(current_distances[MAC]))
         rate.sleep()
 
 if __name__ == '__main__':

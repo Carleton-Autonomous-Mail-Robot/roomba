@@ -23,7 +23,7 @@ def zone(MAC, distance):
 
     
 def read_bluetooth(str_in):
-    split_txt = str_in.data.split(':')
+    split_txt = str_in.data.split(',')
     rospy.loginfo(split_txt[0]+','+split_txt[1])
     
 
