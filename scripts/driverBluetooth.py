@@ -60,7 +60,7 @@ def rosMain():
             to_send = ''
             for MAC in MAC_ADDRs:
                 rospy.loginfo('Beacon: '+str(MAC)+','+str(current_distances[MAC])+'m')
-                to_send = to_send + 'Beacon: '+str(MAC)+','+str(current_distances[MAC]) + '\n'
+                to_send = to_send +str(MAC)+','+str(current_distances[MAC]) + '\n'
             pub.publish(to_send)
         rate.sleep()
 
