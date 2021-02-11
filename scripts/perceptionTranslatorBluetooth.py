@@ -24,7 +24,7 @@ def zone(MAC, distance):
     
 def read_bluetooth(str_in):
     split_txt = str_in.data.split(':')
-    zone(split_txt[0],split_txt[1])
+    zone(split_txt[0],float(split_txt[1]))
 
 
 
