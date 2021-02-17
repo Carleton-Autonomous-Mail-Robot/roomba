@@ -30,7 +30,7 @@ class ServerReader():
         fullpath = os.path.join(script_dir,filename)
         url = ''
         with open(fullpath,'r') as f:
-            url = f.read().striplines()[0]
+            url = f.read().splitlines()[0]
             f.close()
         return url
 
@@ -52,7 +52,7 @@ class ServerReader():
         clientid = ''
         with open(fullpath,'r') as f:
             try:
-                url = f.read().striplines()[1]
+                url = f.read().splitlines()[1]
             except:
                 pass
             f.close()
