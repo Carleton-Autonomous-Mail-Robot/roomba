@@ -9,8 +9,8 @@ def __new_client():
     res = __make_request({"status": "good",
             "opperation": "newClient",
             "payload": "robot"})
-    rospy.loginfo("Client ID Registered: "+res.json()['clientID'])
-    reader.write_client_id(res.json()['clientID'])
+    rospy.loginfo("Client ID Registered: "+str(res.json()['clientID']))
+    reader.write_client_id(str(res.json()['clientID']))
     
 
 def __client_info():
