@@ -6,6 +6,7 @@ from std_msgs.msg import String
 
 
 def __new_client():
+    reader = ServerReader()
     res = __make_request({"status": "good",
             "opperation": "newClient",
             "payload": "robot"})
