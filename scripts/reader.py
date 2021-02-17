@@ -30,7 +30,30 @@ class ServerReader():
         fullpath = os.path.join(script_dir,filename)
         url = ''
         with open(fullpath,'r') as f:
-            url = f.read()
+            url = f.read().striplines()[0]
             f.close()
         return url
 
+    def write_client_id(self, client_id):
+        server = get_url()
+        script_dir = os.path.dirname(__file__)
+        filename = 'server'
+        fullpath = os.path.join(script_dir,filename)
+        writing_file = open(fullpath,"w")
+        writing_file.write(server+'\n'+client_id)
+        writing_file.close()
+
+        return url
+    
+    def read_client_id(self,client_id):
+        script_dir = os.path.dirname(__file__)
+        filename = 'server'
+        fullpath = os.path.join(script_dir,filename)
+        clientid = ''
+        with open(fullpath,'r') as f:
+            try:
+                url = f.read().striplines()[1]
+            except:
+                pass
+            f.close()
+        return url

@@ -4,13 +4,13 @@ from reader import ServerReader
 import rospy
 from std_msgs.msg import String
 
-url = ""
 
 def __new_client():
     res = __make_request({"status": "good",
             "opperation": "newClient",
             "payload": "robot"})
-    rospy.loginfo(res.json()['clientID'])
+    rospy.loginfo("Client ID Registered: "+res.json()['clientID'])
+    reader.write_client_id(res.json()['clientID'])
     
 
 def __client_info():
@@ -21,6 +21,8 @@ def __check_mail():
         res = requests.post(url)
 
 def __make_request(json={}):
+    reader = ServerReader()
+    url = reader.get_url()
     rospy.loginfo('Making a request to: '+url)
     return requests.post("https://web-services-mail.herokuapp.com/",json=json)
 
@@ -28,8 +30,7 @@ def rosMain():
     pub = rospy.Publisher('network', String, queue_size=5)
     rospy.init_node('networkDriver', anonymous=True)
     rate = rospy.Rate(10)
-    reader = ServerReader()
-    url = reader.get_url()
+
     rospy.loginfo("Server URL set as:"+url)
     __new_client()
 
