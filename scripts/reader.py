@@ -19,4 +19,5 @@ class BeaconReader():
         for l in lines:
             csv = l.split(',')
             macs[csv[0]] = (csv[1],csv[2])
+        return macs
 
