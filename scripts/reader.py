@@ -7,7 +7,10 @@ class BeaconReader():
         A utility to read from the beacon file
     '''
     def read_beacons(self):
-        with open('beacons','r') as f:
+        script_dir = os.path.dirname(__file__)
+        filename = 'beacon'
+        fullpath = os.path.join(script_dir,filename)
+        with open(fullpath,'r') as f:
             beacons = f.read()
             f.close()
         macs = dict()
