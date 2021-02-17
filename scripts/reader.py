@@ -4,7 +4,7 @@ import os
 class BeaconReader():
     def __init__(self):
         basepath = os.path.dirname(__file__)
-        self.__path = os.path.abspath(path.join(basepath,'..','/resources','beacons'))
+        self.__path = os.path.abspath(os.path.join(basepath,'..','/resources','beacons'))
     
     '''
         A utility to read from the beacon file
