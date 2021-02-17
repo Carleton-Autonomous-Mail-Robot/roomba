@@ -35,7 +35,7 @@ class ServerReader():
         return url
 
     def write_client_id(self, client_id):
-        server = get_url()
+        server = self.get_url()
         script_dir = os.path.dirname(__file__)
         filename = 'server'
         fullpath = os.path.join(script_dir,filename)
