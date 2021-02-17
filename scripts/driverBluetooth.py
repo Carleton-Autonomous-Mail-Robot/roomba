@@ -42,7 +42,7 @@ def __get_distance():
 
     distances = dict()
     for MAC in MAC_ADDRs:
-        distances[MAC] = pow(10,(reader.read_beacons()[MAC][2] - read_rssi[MAC])/(10*reader.read_beacons()[MAC][1]))
+        distances[MAC] = pow(10,(reader.read_beacons()[MAC][1] - read_rssi[MAC])/(10*reader.read_beacons()[MAC][0]))
     
     return distances
 
