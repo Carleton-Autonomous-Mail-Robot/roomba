@@ -24,11 +24,12 @@ def __make_request(json={}):
     return requests.post(url,json=json)
 
 def rosMain():
-    reader = ServerReader()
-    url = reader.get_url()
     pub = rospy.Publisher('network', String, queue_size=5)
     rospy.init_node('networkDriver', anonymous=True)
     rate = rospy.Rate(10)
+    reader = ServerReader()
+    url = reader.get_url()
+    rospy.loginfo("Server URL set as:"+url)
     __new_client()
 
     while not rospy.is_shutdown():
