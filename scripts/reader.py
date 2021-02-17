@@ -10,6 +10,7 @@ class BeaconReader():
         script_dir = os.path.dirname(__file__)
         filename = 'beacons'
         fullpath = os.path.join(script_dir,filename)
+        beacons = ''
         with open(fullpath,'r') as f:
             beacons = f.read()
             f.close()
