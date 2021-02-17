@@ -1,8 +1,8 @@
 import requests 
 from reader import ServerReader
 
-__URL = 'localhost:5000/'
-__client_id = ''
+URL = ""
+CLIENT_ID = ""
 
 def __new_client():
     res = __make_request({"status": "good",
@@ -19,11 +19,11 @@ def __check_mail():
         res = requests.post(url)
 
 def __make_request(json={}):
-    return requests.post(__URL,json=json)
+    return requests.post(URL,json=json)
 
 def rosMain():
     reader = ServerReader()
-    __URL = reader.get_url()
+    URL = reader.get_url()
     pub = rospy.Publisher('network', String, queue_size=5)
     rospy.init_node('networkDriver', anonymous=True)
     rate = rospy.Rate(10)
