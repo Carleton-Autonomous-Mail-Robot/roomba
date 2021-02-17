@@ -2,6 +2,7 @@
 import requests 
 from reader import ServerReader
 import rospy
+from std_msgs.msg import String
 
 url = ""
 
