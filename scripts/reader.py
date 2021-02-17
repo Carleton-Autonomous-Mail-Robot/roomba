@@ -21,3 +21,16 @@ class BeaconReader():
             macs[csv[0]] = (float(csv[1]),float(csv[2]))
         return macs
 
+
+class ServerReader():
+
+    def get_url(self):
+        script_dir = os.path.dirname(__file__)
+        filename = 'server'
+        fullpath = os.path.join(script_dir,filename)
+        url = ''
+        with open(fullpath,'r') as f:
+            url = f.read()
+            f.close()
+        return url
+
