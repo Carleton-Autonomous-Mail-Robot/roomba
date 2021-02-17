@@ -42,8 +42,6 @@ class ServerReader():
         writing_file = open(fullpath,"w")
         writing_file.write(server+'\n'+client_id)
         writing_file.close()
-
-        return url
     
     def read_client_id(self,client_id):
         script_dir = os.path.dirname(__file__)
