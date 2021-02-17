@@ -2,15 +2,12 @@ import os
 
 
 class BeaconReader():
-    def __init__(self):
-        basepath = os.path.dirname(__file__)
-        self.__path = os.path.abspath(os.path.join(basepath,'..','/resources','beacons'))
-    
+
     '''
         A utility to read from the beacon file
     '''
     def read_beacons(self):
-        with open(self.__path,'r') as f:
+        with open('beacons','r') as f:
             beacons = f.read()
             f.close()
         macs = dict()
