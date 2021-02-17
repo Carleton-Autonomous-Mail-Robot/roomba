@@ -10,7 +10,7 @@ def __new_client():
     res = __make_request({"status": "good",
             "opperation": "newClient",
             "payload": "robot"})
-    rospy.loginfo(res.json())
+    rospy.loginfo(res.json()['clientID'])
     
 
 def __client_info():
@@ -21,6 +21,7 @@ def __check_mail():
         res = requests.post(url)
 
 def __make_request(json={}):
+    rospy.loginfo('Making a request to: '+url)
     return requests.post("https://web-services-mail.herokuapp.com/",json=json)
 
 def rosMain():
