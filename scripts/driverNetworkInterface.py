@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import requests 
 from reader import ServerReader
+import rospy
 
 url = ""
 
