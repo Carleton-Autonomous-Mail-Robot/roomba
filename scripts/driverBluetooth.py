@@ -8,7 +8,7 @@
 import rospy
 from bluepy.btle import Scanner
 from std_msgs.msg import String
-import utilities.reader
+from utilities.reader import read_beacons
 
 __measured_power = -59 #hardcoded, make some sort of beacon object
 __enviromental = 2.688683131805121 #hardcoded, make some sort of beacon object
@@ -22,7 +22,7 @@ def __read_RSSI():
     ble_list = Scanner().scan(0.5)
     found_beacons = dict()
     for dev in ble_list:
-        if dev.addr in reader.read_beacons().keys():
+        if dev.addr in read_beacons().keys():
             found_beacons[dev.addr] = dev.rssi
     return found_beacons
 
@@ -40,7 +40,7 @@ def __get_distance():
 
     distances = dict()
     for MAC in MAC_ADDRs:
-        distances[MAC] = pow(10,(reader.read_beacons()[MAC][2] - read_rssi[MAC])/(10*reader.read_beacons()[MAC][1]))
+        distances[MAC] = pow(10,(read_beacons()[MAC][2] - read_rssi[MAC])/(10*read_beacons()[MAC][1]))
     
     return distances
 
