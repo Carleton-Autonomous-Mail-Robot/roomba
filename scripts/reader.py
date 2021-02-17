@@ -52,8 +52,8 @@ class ServerReader():
         clientid = ''
         with open(fullpath,'r') as f:
             try:
-                url = f.read().splitlines()[1]
+                client_id = f.read().splitlines()[1]
             except:
                 pass
             f.close()
-        return url
+        return client_id
