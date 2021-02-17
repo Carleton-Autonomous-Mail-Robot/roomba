@@ -8,7 +8,7 @@
 import rospy
 from bluepy.btle import Scanner
 from std_msgs.msg import String
-from utilities.reader import BeaconReader
+from reader import BeaconReader
 
 __measured_power = -59 #hardcoded, make some sort of beacon object
 __enviromental = 2.688683131805121 #hardcoded, make some sort of beacon object
