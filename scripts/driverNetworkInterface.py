@@ -24,13 +24,14 @@ def __client_info():
 
 def __check_mail():
     id = __client_info()
-    if __client_info() is '':
+    if id is '':
         pass
     else:
+        rospy.loginfo('Making Request under client_id:'+__client_info())
         res = __make_request({
             "status": "good",
             "opperation":"getMessage",
-            "clientID": __client_info()
+            "clientID": str(id)
         })
         return res.json()['payload']
     return None
