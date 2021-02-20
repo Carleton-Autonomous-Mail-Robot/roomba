@@ -47,7 +47,7 @@ class ServerReader():
         script_dir = os.path.dirname(__file__)
         filename = 'server'
         fullpath = os.path.join(script_dir,filename)
-        clientid = ''
+        client_id = ''
         with open(fullpath,'r') as f:
             try:
                 client_id = f.read().splitlines()[1]
