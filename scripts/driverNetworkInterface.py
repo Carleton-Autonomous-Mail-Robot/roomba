@@ -8,7 +8,7 @@ from std_msgs.msg import String
 def __new_client():
     reader = ServerReader()
     if not reader.read_client_id() == '':
-        rospy.loginfo("Client ID read from file: "+reader.read_client_id()))
+        rospy.loginfo("Client ID read from file: "+reader.read_client_id())
         return
 
     res = __make_request({"status": "good",
