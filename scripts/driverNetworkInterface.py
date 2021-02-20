@@ -15,11 +15,22 @@ def __new_client():
     
 
 def __client_info():
-    return None
+    reader = ServerReader()
+    return reader.read_client_id()
 
 def __check_mail():
-    if __client_info() is None:
-        res = requests.post(url)
+    id = __client_info()
+    if __client_info() is '':
+        pass
+    else:
+        res = __make_request({
+            "status": "good",
+            "opperation":"getMessage",
+            "clientID": __client_info()
+        })
+        return res['payload']
+    return None
+    
 
 def __make_request(json={}):
     reader = ServerReader()
@@ -34,7 +45,11 @@ def rosMain():
     __new_client()
 
     while not rospy.is_shutdown():
-        rate.sleep()
+        msg = __check_mail()
+        if msg is None:
+            continue
+        rospy.loginfo('network('+msg+')')
+        pub.publish(msg)
 
 if __name__ == '__main__':
     try:
