@@ -21,7 +21,7 @@ def bumpAndDoSomething(data, args):
 
 # Initialize the node, setup the publisher and subscriber
 def rosMain():
-    rospy.init_node('bumperboy', anonymous=True)
+    rospy.init_node('bumperSensor', anonymous=True)
     publisher = rospy.Publisher('perceptions', String, queue_size=10)
     rospy.Subscriber('bumper', Bumper, bumpAndDoSomething, (publisher))
     rospy.spin()
