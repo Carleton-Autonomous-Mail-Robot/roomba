@@ -46,7 +46,7 @@ def __make_request(json={}):
 def rosMain():
     pub = rospy.Publisher('network', String, queue_size=5)
     rospy.init_node('networkDriver', anonymous=True)
-    rate = rospy.Rate(10)
+    rate = rospy.Rate(100)
     __new_client()
 
     while not rospy.is_shutdown():
