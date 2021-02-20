@@ -28,7 +28,7 @@ def __check_mail():
             "opperation":"getMessage",
             "clientID": __client_info()
         })
-        return res['payload']
+        return res.json()['payload']
     return None
     
 
