@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 # takes in inputs from an analog to digital converter connected to IR sensors and converts to cm before
 #     using the two distance measurements to calculate teh robot's distance from the wall
 
@@ -5,7 +7,8 @@
 
 import time
 import math
-#import rospy
+from std_msgs.msg import String
+import rospy
 
 # Import the ADS1x15 module.
 import Adafruit_ADS1x15
@@ -33,8 +36,10 @@ def distance(dis1, dis2):
     B = math.asin((dis1*math.sin(R*math.pi/180))/r)*180/math.pi
     A = 180 - B - R / 2
     b = math.sin(B)*dis2/math.sin(A)
-    print("Distance from wall is "+ str(b) +" centimeters")
-    print("Offset angle is "+ str(180 - A) +" degrees.")
+    #print("Distance from wall is "+ str(b) +" centimeters")
+    #print("Offset angle is "+ str(180 - A) +" degrees.")
+    return "distance: " + str(b)
+    
     #when actually implemented into the robot publish will replace the prints
     #publish(b, A)
 
@@ -43,8 +48,7 @@ def distance(dis1, dis2):
 #print('| Sensor 1 | Sensor 2 |'.format(*range(2)))
 #print('-' * 37)
 
-while True:
-    
+def calculate():    
     values = [0]*2
     v = [0]*2
     for i in range(2):
@@ -75,11 +79,22 @@ while True:
     #check if the valeus are in the range, this will likely need to be tuned in the future
     if values[0] < avg1*1.5 and values[0] > avg1*0.5:
         if values[1] < avg2*1.5 and values[1] > avg2*0.5:
-            distance(values[0], values[1])
-            
+            return distance(values[0], values[1])
+    
+    return -1
     # Pause for a set period of time in seconds, this will need to be tuned.
-    time.sleep(1)
+    #time.sleep(1)
     
-    
+def rosMain():
+    rospy.init_node('IRSensor', anonymous=True)
+    publisher = rospy.Publisher('perceptions', String, queue_size=10)
+    #rate = rospy.rate(10)
+    publisher.publish(calculate)
+    rospy.spin
 
+if __name__ == '__main__':
+    try:
+        rosMain()
+    except rospy.ROSInterruptException:
+        pass
 
