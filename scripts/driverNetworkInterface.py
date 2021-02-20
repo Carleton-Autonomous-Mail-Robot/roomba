@@ -40,7 +40,7 @@ def __make_request(json={}):
     reader = ServerReader()
     url = reader.get_url()
     rospy.loginfo('Making a request to: '+url)
-    return requests.post("https://web-services-mail.herokuapp.com/",json=json)
+    return requests.post(url,json=json)
 
 def rosMain():
     pub = rospy.Publisher('network', String, queue_size=5)
