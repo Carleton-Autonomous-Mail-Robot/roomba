@@ -40,7 +40,7 @@ def __check_mail():
 def __make_request(json={}):
     reader = ServerReader()
     url = reader.get_url()
-    rospy.loginfo('Making a request to: '+url)
+    #rospy.loginfo('Making a request to: '+url)
     return requests.post(url,json=json)
 
 def rosMain():
@@ -51,11 +51,11 @@ def rosMain():
 
     while not rospy.is_shutdown():
         msg = __check_mail()
-        if msg is "Not Found" or msg is None:
+        if msg == "Not Found" or msg is None:
+            msg = None
             continue
-        else:
-            rospy.loginfo('network('+msg+')')
-            pub.publish(msg)
+        rospy.loginfo('network('+msg+')')
+        pub.publish(msg)
 
 if __name__ == '__main__':
     try:
