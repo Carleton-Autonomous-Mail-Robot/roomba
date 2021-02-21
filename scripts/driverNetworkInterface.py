@@ -51,7 +51,7 @@ def rosMain():
 
     while not rospy.is_shutdown():
         msg = __check_mail()
-        if msg is "Not Found":
+        if msg is "Not Found" or msg is None:
             continue
         rospy.loginfo('network('+msg+')')
         pub.publish(msg)
