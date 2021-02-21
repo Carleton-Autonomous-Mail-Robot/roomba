@@ -46,15 +46,16 @@ def __make_request(json={}):
 def rosMain():
     pub = rospy.Publisher('network', String, queue_size=5)
     rospy.init_node('networkDriver', anonymous=True)
-    rate = rospy.Rate(100)
+    rate = rospy.Rate(10)
     __new_client()
 
     while not rospy.is_shutdown():
         msg = __check_mail()
         if msg is "Not Found" or msg is None:
             continue
-        rospy.loginfo('network('+msg+')')
-        pub.publish(msg)
+        else:
+            rospy.loginfo('network('+msg+')')
+            pub.publish(msg)
 
 if __name__ == '__main__':
     try:
