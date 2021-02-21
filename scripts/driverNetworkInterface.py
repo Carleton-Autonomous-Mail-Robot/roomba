@@ -27,7 +27,7 @@ def __check_mail():
     if id is '':
         pass
     else:
-        rospy.loginfo('Making Request under client_id:'+__client_info())
+        #rospy.loginfo('Making Request under client_id:'+__client_info())
         res = __make_request({
             "status": "good",
             "opperation":"getMessage",
