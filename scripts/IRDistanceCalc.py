@@ -89,7 +89,7 @@ def rosMain():
     rospy.init_node('IRSensor', anonymous=True)
     publisher = rospy.Publisher('perceptions', String, queue_size=10)
     #rate = rospy.rate(10)
-    publisher.publish(calculate)
+    publisher.publish(calculate())
     rospy.spin
 
 if __name__ == '__main__':

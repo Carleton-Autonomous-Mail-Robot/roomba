@@ -43,8 +43,6 @@ def decodeAction(data, args):
     if not actionBusy:
         #actionBusy = True
         #print(action)
-
-        #drive(10)
     
         # Deal with drive action
         if re.search("drive", action):
@@ -182,7 +180,7 @@ def rosMain():
     undockPublisher = rospy.Publisher('undock', Empty, queue_size=1)
     destinationPublisher = rospy.Publisher('setDestination', String, queue_size=1)
     #perceptionsPublisher = rospy.Publisher('perceptions', String, queue_size=10)
-    rospy.init_node('actionTranslator', anonymos=True)
+    rospy.init_node('actionTranslator', anonymous=True)
     rospy.Subscriber('actions', String, decodeAction, (drivePublisher, dockPublisher, undockPublisher, destinationPublisher))
     
     #publishTurn(perceptionsPublisher)
