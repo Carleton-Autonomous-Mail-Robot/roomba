@@ -19,6 +19,17 @@ def decodeAction(data, args):
     (drivePublisher, dockPublisher, undockPublisher, destinationPublisher) = args
     rospy.loginfo("Action: " + action)
     
+    #handle forward/backward command from bumperReasoner.py
+    if(action == "forward"):
+        message = Twist()
+        message = getTwistMesg("forward", True)
+        drivePublisher.publish(message)
+    elif(action == "backward"):
+        message = Twist()
+        message = getTwistMesg("backward", True)
+        drivePublisher.publish(message)
+
+
     # Handle the docking station cases
     if action == "station(dock)":
         dockPublisher.publish()
@@ -80,38 +91,6 @@ def turn(publisher, parameter):
     while (time.time() < t_end):
         drive(publisher,parameter, False)
     
-    # Go forward for 2 seconds
-    #t_end = time.time() + 2     # 5 second delay
-    #while (time.time() < t_end):
-    #    drive(publisher,"forward", False)
-
-    # Turn another 90 deg
-    #t_end = time.time() + 10     # 10 second delay
-    #while (time.time() < t_end):
-    #    drive(publisher,parameter, False)
-
-    # Drive forward until the line is seen again
-    #line = getLine()[0]
-    #foundLine = (line == "c") or (line == "l") or (line == "r")
-    #while (not foundLine):
-    #    drive(publisher,"forward", False)
-    #    line = getLine()[0]
-    #    foundLine = (line == "c")# or (line == "l") or (line == "r")
-     
-    # turn back
-    #t_end = time.time() + 1     # 5 second delay
-    #while (time.time() < t_end):
-    #    if parameter == "left":
-    #        recoverTurn = "right"
-    #    else:
-    #        recoverTurn = "left"
-    #    drive(publisher,recoverTurn, False)
-        
-    #global lastTurn
-    #if parameter == "left":
-    #    lastTurn = "right"
-    #else:
-    #    lastTurn = "left"
     
     # Stop, once the line is centered again
     drive(publisher, "stop")
