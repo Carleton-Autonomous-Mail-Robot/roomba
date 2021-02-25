@@ -20,7 +20,6 @@ def bumperReasoning(data, args):
         publisher.publish("backward")
 
 
-
 # Main program
 def rosMain():
 
