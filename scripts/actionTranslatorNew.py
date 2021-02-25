@@ -7,28 +7,44 @@ from std_msgs.msg import Empty
 from geometry_msgs.msg import Twist
 import time
 
-lastTurn = "left"
 actionBusy = False
+
+# @author: Simon Yacoub
 
 
 # Decode and execute the action
 def decodeAction(data, args):
-        
+    actionMessage = Twist() #the mess
+
     # Get the parameters
     action = str(data.data)
-    (drivePublisher, dockPublisher, undockPublisher, destinationPublisher) = args
+    (drivePublisher, dockPublisher, undockPublisher) = args
     rospy.loginfo("Action: " + action)
     
-    #handle forward/backward command from bumperReasoner.py
+    #handle basic movement commands from actions topic
     if(action == "forward"):
-        message = Twist()
-        message = getTwistMesg("forward", True)
-        drivePublisher.publish(message)
+        actionMessage = getTwistMesg("forward")
     elif(action == "backward"):
-        message = Twist()
-        message = getTwistMesg("backward", True)
-        drivePublisher.publish(message)
+        actionMessage = getTwistMesg("backward")
 
+    elif(action == "left"): #Does a 90 degree turn left (stops robot first)
+        actionMessage = getTwistMesg("left")
+        decodeAction("stop", args)
+        drivePublisher.publish(actionMessage)
+        drivePublisher.publish(actionMessage)
+        drivePublisher.publish(actionMessage)
+    elif(action == "right"): #does 90 degree turn right (stops robot first)
+        actionMessage = getTwistMesg("right")
+        decodeAction("stop", args)
+        drivePublisher.publish(actionMessage)
+        drivePublisher.publish(actionMessage)
+    elif(action == "stop"): #stops the robot
+        actionMessage = getTwistMesg("stop")
+    else:
+        actionMessage = getTwistMesg("idle")
+
+    #publish action
+    drivePublisher.publish(actionMessage)
 
     # Handle the docking station cases
     if action == "station(dock)":
@@ -36,133 +52,49 @@ def decodeAction(data, args):
     elif action == "station(undock)":
         undockPublisher.publish()   # Publish to the undock topic
         
-#        for i in range(10):
-#            drive(drivePublisher,"back")
         
-        turn(drivePublisher,"left") # Turn the robot around
-        
-    # Extract the action parameter between the brackets
-    parameter = re.search('\((.*)\)', action).group(1)
+'''
+Get a Twist message which consists of a linear and angular component which can be negative or positive.
 
-    # Deal with passing setDestination action to the appropriate topic
-    if re.search("setDestination", action):
-        destinationPublisher.publish(parameter)
+linear.x  (+)     Move forward (m/s)
+          (-)     Move backward (m/s)
 
-    
-    global actionBusy
-    #print("Action Busy: " + str(actionBusy))
-    if not actionBusy:
-        #actionBusy = True
-        #print(action)
+angular.z (+)     Rotate counter-clockwise (rad/s)
+         (-)     Rotate clockwise (rad/s)
 
-        #drive(10)
-    
-        # Deal with drive action
-        if re.search("drive", action):
-            drive(drivePublisher,parameter)
-        
-        # Deal with turn message (similar to drive action but continues until the 
-        # line sensor detects "c")
-        elif re.search("turn", action):
-            actionBusy = True
-            turn(drivePublisher,parameter)
-            actionBusy = False
-    
-        # Deal with passing setDestination action to the appropriate topic
-        #elif re.search("setDestination", action):
-        #    destinationPublisher.publish(parameter)
-    
-        # Deal with invalid action
-        else:
-            rospy.loginfo("Invalid action ignored")
-            
-        #actionBusy = False
-        #print("all done")
-
-# Turn command, repeated drive commands until the lince sensor detects c again
-def turn(publisher, parameter):
-    #print("in turn method")
-    
-    # Get the turn started
-    drive(publisher,parameter)
-    
-    # turn for 5 seconds (gives about a 45 deg angle)
-    t_end = time.time() + 10     # 5 second delay
-    while (time.time() < t_end):
-        drive(publisher,parameter, False)
-    
-    
-    # Stop, once the line is centered again
-    drive(publisher, "stop")
-    print("done turning")
-
-
-# Drive command for the robot
-def drive(publisher, parameter, driveParam = True):
-    message = getTwistMesg(parameter, driveParam)
-    #print("drive method")
-    publisher.publish(message)
-        
-# Get the message to send to the robot in order to drive it
-def getTwistMesg(parameter, drive):
+Limits:
+-0.5 <= linear.x <= 0.5 and -4.25 <= angular.z <= 4.25 (4rads = 45deg)
+'''
+def getTwistMesg(action):
     message = Twist()
     
-    global lastTurn
-    
-    if parameter == "forward":
-        message.linear.x = 0.05
+    if action == "forward":
+        message.linear.x = 0.1
         message.angular.z = 0
-    elif parameter == "left":
-        lastTurn = parameter
-        message.linear.x = 0.01
-        message.angular.z = 0.05
-    elif parameter == "right":
-        lastTurn = parameter
-        message.linear.x = 0.01
-        message.angular.z = -0.05
-    elif parameter == "stop":
-        #message.linear.x = 0.1
-        #message.angular.z = 0.1
-        message.linear.x = 0
-        message.angular.z = 0
-    elif parameter == "back":
+    elif action == "back":
         #print("drive Back spot")
         message.linear.x = -0.1
         message.linear.z = 0
-    else:                           # Line lost or across
-        if lastTurn == "right":
-            message.linear.x = 0.005
-            message.angular.z = -0.05
-        else:
-            message.linear.x = 0.005
-            message.angular.z = 0.05
-        
-    if (drive == False) and (parameter != "forward"):
-        message.linear.z = message.linear.z * 5
+    elif action == "left":
+        message.linear.x = 0
+        message.angular.z = 4
+    elif action == "right":
+        message.linear.x = 0
+        message.angular.z = -4
+    elif action == "stop":
+        message.linear.x = 0
+        message.angular.z = 0
     
     return message
 
-#def publishTurn(pub):
-#    rate = rospy.Rate(10)
-#    
-#    while not rospy.is_shutdown():
-#        global turning
-#        if turning:
-#            message = "busy(turning)"
-#            rospy.loginfo(message)
-#            pub.publish(message)
-#        rate.sleep()
-   
-
 # Main execution
 def rosMain():
-    drivePublisher = rospy.Publisher('cmd_vel', Twist, queue_size=1)
+    drivePublisher = rospy.Publisher('cmd_vel', Twist, queue_size=2)
     dockPublisher = rospy.Publisher('dock', Empty, queue_size=1)
     undockPublisher = rospy.Publisher('undock', Empty, queue_size=1)
-    destinationPublisher = rospy.Publisher('setDestination', String, queue_size=1)
     #perceptionsPublisher = rospy.Publisher('perceptions', String, queue_size=10)
     rospy.init_node('actionTranslator', anonymos=True)
-    rospy.Subscriber('actions', String, decodeAction, (drivePublisher, dockPublisher, undockPublisher, destinationPublisher))
+    rospy.Subscriber('actions', String, decodeAction, (drivePublisher, dockPublisher, undockPublisher))
     
     #publishTurn(perceptionsPublisher)
     rospy.spin()

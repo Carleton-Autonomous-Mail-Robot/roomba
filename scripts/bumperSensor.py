@@ -8,14 +8,29 @@ from std_msgs.msg import String
 def bumpAndDoSomething(data, args):
     # Extract the publisher and the message data
     (publisher) = args
-    bumperLeft = data.is_left_pressed
-    bumperRight = data.is_right_pressed 
-    message = String()
-    message.data = "bumper is not being pressed"
+    is_left_pressed = data.is_left_pressed
+    is_right_pressed = data.is_right_pressed 
 
-    if(bumperLeft or bumperRight):message.data = "bumper is being pressed"
+    # Bumper light sensors (Create 2 only) in order from left to right
+    # Value = true if an obstacle detected
+    is_light_left = data.is_light_left
+    is_light_front_left = data.is_light_front_left
+    is_light_center_left = data.is_light_center_left
+    is_light_center_right = data.is_light_center_right
+    is_light_front_right = data.is_light_front_right
+    is_light_right = data.is_light_right
+
+    message = String()
     
-# Publish the perception
+    if(is_left_pressed or is_right_pressed):message.data = "bumper is being pressed"
+    else: message.data = "bumper is not being pressed"
+
+    if(is_light_center_left):
+        message.data = "bumper detects an object to the left"
+    elif(is_light_right):
+        message.data = "bumper detects an object to the right"
+
+    # Publish the perception
     publisher.publish(message)
 
 
