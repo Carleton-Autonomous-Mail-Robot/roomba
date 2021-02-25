@@ -8,18 +8,6 @@ import rospy
 from std_msgs.msg import String
 import time
 
-def bumperReasoning(data, args):
-    (publisher) = args
-
-    message = str(data.data)
-    if message == "bumper is not being pressed":
-        #driveforward
-        publisher.publish("forward")
-    elif message == "bumper is being pressed":
-        #drivebackward
-        publisher.publish("backward")
-
-
 # Main program
 def rosMain():
 
@@ -35,11 +23,26 @@ def rosMain():
 
     # spin() simply keeps python from exiting until this node is stopped
     rospy.spin()
+        
 
+def bumperReasoning(data, args):
+    (publisher) = args
+
+    message = str(data.data)
+
+    #publisher publishes actionMessages to the action topic
+
+    if message == "bumper is not being pressed":
+        publisher.publish("forward")
+    elif message == "bumper is being pressed":
+        publisher.publish("backward")
+    elif message == "bumper detects an object to the left":
+        publisher.publish("right")
+    elif message == "bumper detects an object to the right":
+        publisher.publish("left")
 
 if __name__ == '__main__':
     try:
         rosMain()
     except rospy.ROSInterruptException:
         pass
-        
