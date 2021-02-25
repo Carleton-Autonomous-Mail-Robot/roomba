@@ -93,7 +93,7 @@ def rosMain():
     dockPublisher = rospy.Publisher('dock', Empty, queue_size=1)
     undockPublisher = rospy.Publisher('undock', Empty, queue_size=1)
     #perceptionsPublisher = rospy.Publisher('perceptions', String, queue_size=10)
-    rospy.init_node('actionTranslator', anonymos=True)
+    rospy.init_node('actionTranslator', anonymous=True)
     rospy.Subscriber('actions', String, decodeAction, (drivePublisher, dockPublisher, undockPublisher))
     
     #publishTurn(perceptionsPublisher)
