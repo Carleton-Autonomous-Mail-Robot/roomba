@@ -40,8 +40,6 @@ def distance(dis1, dis2):
     #print("Offset angle is "+ str(180 - A) +" degrees.")
     return "distance: " + str(b)
     
-    #when actually implemented into the robot publish will replace the prints
-    #publish(b, A)
 
 #    when testing this printed nice headers but it's not needed anymore
 #print('Reading ADS1x15 values, press Ctrl-C to quit...')
@@ -90,7 +88,7 @@ def rosMain():
     publisher = rospy.Publisher('perceptions', String, queue_size=10)
     #rate = rospy.rate(10)
     publisher.publish(calculate())
-    rospy.spin
+    rospy.spin()
 
 if __name__ == '__main__':
     try:

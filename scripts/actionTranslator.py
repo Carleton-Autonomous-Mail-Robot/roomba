@@ -26,17 +26,21 @@ def decodeAction(data, args):
         actionMessage = getTwistMesg("forward")
     elif(action == "backward"):
         actionMessage = getTwistMesg("backward")
-
     elif(action == "left"): #Does a 90 degree turn left (stops robot first)
         actionMessage = getTwistMesg("left")
         decodeAction("stop", args)
-        drivePublisher.publish(actionMessage)
         drivePublisher.publish(actionMessage)
         drivePublisher.publish(actionMessage)
     elif(action == "right"): #does 90 degree turn right (stops robot first)
         actionMessage = getTwistMesg("right")
         decodeAction("stop", args)
         drivePublisher.publish(actionMessage)
+        drivePublisher.publish(actionMessage)
+    elif(action == "sright"): #small r motion for wall following
+        actionMessage = getTwistMesg("sright")
+        drivePublisher.publish(actionMessage)
+    elif(action == "sleft"): #small l motion for wall following
+        actionMessage = getTwistMesg("sleft")
         drivePublisher.publish(actionMessage)
     elif(action == "stop"): #stops the robot
         actionMessage = getTwistMesg("stop")
@@ -69,11 +73,10 @@ def getTwistMesg(action):
     message = Twist()
     
     if action == "forward":
-        message.linear.x = 0.1
+        message.linear.x = 0.3
         message.angular.z = 0
-    elif action == "back":
-        #print("drive Back spot")
-        message.linear.x = -0.1
+    elif action == "backward":
+        message.linear.x = -0.3
         message.linear.z = 0
     elif action == "left":
         message.linear.x = 0
@@ -81,6 +84,12 @@ def getTwistMesg(action):
     elif action == "right":
         message.linear.x = 0
         message.angular.z = -4
+    elif action == "sleft":
+        message.linear.x = 0
+        message.angular.z = 0.5
+    elif action == "sright":
+        message.linear.x = 0
+        message.angular.z = -0.5
     elif action == "stop":
         message.linear.x = 0
         message.angular.z = 0

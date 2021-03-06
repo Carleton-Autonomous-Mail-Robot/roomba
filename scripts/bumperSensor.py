@@ -22,8 +22,8 @@ def bumpAndDoSomething(data, args):
 
     message = String()
     
-    if(is_left_pressed or is_right_pressed):message.data = "bumper is being pressed"
-    else: message.data = "bumper is not being pressed"
+    if(is_left_pressed or is_right_pressed):message.data = "bumper: pressed"
+    else: message.data = "bumper: unpressed"
 
     if(data.is_light_front_right or  is_light_center_right):
         message.data = "bumper detects an object to the left"

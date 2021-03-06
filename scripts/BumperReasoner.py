@@ -32,9 +32,9 @@ def bumperReasoning(data, args):
 
     #publisher publishes actionMessages to the action topic
 
-    if message == "bumper is not being pressed":
+    if message == "bumper: unpressed":
         publisher.publish("forward")
-    elif message == "bumper is being pressed":
+    elif message == "bumper: pressed":
         publisher.publish("backward")
     elif message == "bumper detects an object to the left":
         publisher.publish("right")
