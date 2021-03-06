@@ -86,9 +86,16 @@ def calculate():
 def rosMain():
     rospy.init_node('IRSensor', anonymous=True)
     publisher = rospy.Publisher('perceptions', String, queue_size=10)
-    #rate = rospy.rate(10)
-    publisher.publish(calculate())
-    rospy.spin()
+    try:
+        while True:
+            calc = calculate()
+            if calc == -1:
+                pass
+            else:
+                publisher.publish(calc)
+            time.sleep(0.5)
+    except KeyboardInterrupt:
+        sys.exit(0)
 
 if __name__ == '__main__':
     try:

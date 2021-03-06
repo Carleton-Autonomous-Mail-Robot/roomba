@@ -21,7 +21,7 @@ class WallfollowState(State):
 	"""
 	
 	def on_event(self, event):
-		if event == "bump"
+		if event == "bump":
 			return AvoidanceState()
 		return self
 
@@ -32,6 +32,6 @@ class AvoidanceState(State):
 	"""
 	
 	def on_event(self, event):
-		if event == "foundwall"
+		if event == "foundwall":
 			return Wallfollowstate()
 		return self
