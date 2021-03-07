@@ -9,7 +9,7 @@ import time
 
 actionBusy = False
 
-# @author: Simon Yacoub
+# @author: Simon Yacoub and Devon Daley
 
 
 # Decode and execute the action
@@ -85,11 +85,11 @@ def getTwistMesg(action):
         message.linear.x = 0
         message.angular.z = -4
     elif action == "sleft":
-        message.linear.x = 0
-        message.angular.z = 0.5
+        message.linear.x = 0.1
+        message.angular.z = 0.25
     elif action == "sright":
-        message.linear.x = 0
-        message.angular.z = -0.5
+        message.linear.x = 0.1
+        message.angular.z = -0.25
     elif action == "stop":
         message.linear.x = 0
         message.angular.z = 0

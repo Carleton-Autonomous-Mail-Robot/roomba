@@ -3,12 +3,13 @@
 # takes in inputs from an analog to digital converter connected to IR sensors and converts to cm before
 #     using the two distance measurements to calculate teh robot's distance from the wall
 
-# Author: Jozef Tierney
+# Author: Jozef Tierney and Devon Daley
 
 import time
 import math
 from std_msgs.msg import String
 import rospy
+import sys
 
 # Import the ADS1x15 module.
 import Adafruit_ADS1x15
@@ -38,7 +39,7 @@ def distance(dis1, dis2):
     b = math.sin(B)*dis2/math.sin(A)
     #print("Distance from wall is "+ str(b) +" centimeters")
     #print("Offset angle is "+ str(180 - A) +" degrees.")
-    return "distance: " + str(b)
+    return "distance: " + str(abs(b))
     
 
 #    when testing this printed nice headers but it's not needed anymore
@@ -66,14 +67,19 @@ def calculate():
     #calculate averages
     avg1 = sum(stack1)/5
     avg2 = sum(stack2)/5
-    #insert new values, pop oldest values
-    stack1.insert(0, values[0])
-    stack1.pop(5)
-    stack2.insert(0, values[1])
-    stack2.pop(5)
+    
+    #insert new values, pop oldest values. Make sure they aren't crazy outliers
+    if abs(values[0]) < 50:
+        stack1.insert(0, values[0])
+        stack1.pop(5)
+    if abs(values[1]) < 50:
+        stack2.insert(0, values[1])
+        stack2.pop(5)
+    
     #prints values and averages for testing
     print(str(values[0]) + "     " + str(avg1))
     print(str(values[1]) + "     " + str(avg2))
+    
     #check if the valeus are in the range, this will likely need to be tuned in the future
     if values[0] < avg1*1.5 and values[0] > avg1*0.5:
         if values[1] < avg2*1.5 and values[1] > avg2*0.5:
@@ -86,16 +92,15 @@ def calculate():
 def rosMain():
     rospy.init_node('IRSensor', anonymous=True)
     publisher = rospy.Publisher('perceptions', String, queue_size=10)
-    try:
-        while True:
-            calc = calculate()
-            if calc == -1:
-                pass
-            else:
-                publisher.publish(calc)
+    
+    while not rospy.is_shutdown():
+        calc = calculate()
+        if calc == -1:
+            time.sleep(0.2)
+            pass
+        else:
+            publisher.publish(calc)
             time.sleep(0.5)
-    except KeyboardInterrupt:
-        sys.exit(0)
 
 if __name__ == '__main__':
     try:

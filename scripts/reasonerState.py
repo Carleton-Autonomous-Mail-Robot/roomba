@@ -21,27 +21,29 @@ def reason(data, args):
     msg = message.split()
     
     # Wall following state
-    if currState == 'WallfollowState':
-        # ID the type of message. start with bumper
+    if str(currState) == 'WallfollowState':
+        # bumper msg
         if msg[0] == "bumper:": 
             if msg[1] == "unpressed":
                 actionPublisher.publish("forward")
-            elif msg[1] == "pressed":
-                actionPublisher.publish("stop")
-                currState.on_event('bump')      # change to avoidance state
-                goAround(actionPublisher)
-                begin = time.time()
+            # elif msg[1] == "pressed":
+                # actionPublisher.publish("stop")
+                # currState.on_event('bump')      # change to avoidance state
+                # goAround(actionPublisher)
+                # begin = time.time()
         # IR msg
         elif msg[0] == "distance:":
             # Too far, make small correction right
-            if int(msg[1]) > 12:
+            if float(msg[1]) > 20:
                 actionPublisher.publish("sright")
             # Too close, make small correction left
-            elif int(msg[1]) < 7:
+            elif float(msg[1]) < 10:
                 actionPublisher.publish("sleft")
+            else:
+                actionPublisher.publish("forward")
     
     # Bumper driven obstacle avoidance state
-    elif currState == 'AvoidanceState':
+    elif str(currState) == 'AvoidanceState':
         if msg[0] == "bumper:":
             if msg[1] == "unpressed":
                 pass
