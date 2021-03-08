@@ -42,6 +42,9 @@ def decodeAction(data, args):
     elif(action == "sleft"): #small l motion for wall following
         actionMessage = getTwistMesg("sleft")
         drivePublisher.publish(actionMessage)
+    elif(action == "bleft"):    # big left motion to make space from wall
+        actionMessage = getTwistMesg("bleft")
+        drivePublisher.publish(actionMessage)
     elif(action == "stop"): #stops the robot
         actionMessage = getTwistMesg("stop")
     else:
@@ -73,10 +76,10 @@ def getTwistMesg(action):
     message = Twist()
     
     if action == "forward":
-        message.linear.x = 0.3
+        message.linear.x = 0.2
         message.angular.z = 0
     elif action == "backward":
-        message.linear.x = -0.3
+        message.linear.x = -0.2
         message.linear.z = 0
     elif action == "left":
         message.linear.x = 0
@@ -90,6 +93,9 @@ def getTwistMesg(action):
     elif action == "sright":
         message.linear.x = 0.1
         message.angular.z = -0.25
+    elif action == "bleft":
+        message.linear.x = -0.1
+        message.angular.z = 0.5
     elif action == "stop":
         message.linear.x = 0
         message.angular.z = 0

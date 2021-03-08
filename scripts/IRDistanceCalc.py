@@ -39,7 +39,11 @@ def distance(dis1, dis2):
     b = math.sin(B)*dis2/math.sin(A)
     #print("Distance from wall is "+ str(b) +" centimeters")
     #print("Offset angle is "+ str(180 - A) +" degrees.")
-    return "distance: " + str(abs(b))
+    
+    # When too close to wall, returns constant 11.3449109014
+    if str(abs(b)) == '11.3449109014':
+        b=1
+    return "distance: " + str(abs(b)) + " angle: " + str(180 - A)
     
 
 #    when testing this printed nice headers but it's not needed anymore
@@ -69,21 +73,24 @@ def calculate():
     avg2 = sum(stack2)/5
     
     #insert new values, pop oldest values. Make sure they aren't crazy outliers
-    if abs(values[0]) < 50:
+    valid = True
+    if abs(values[0]) < 70 and abs(values[1]) < 70:
         stack1.insert(0, values[0])
         stack1.pop(5)
-    if abs(values[1]) < 50:
         stack2.insert(0, values[1])
         stack2.pop(5)
+    else:
+        valid = False
     
     #prints values and averages for testing
     print(str(values[0]) + "     " + str(avg1))
     print(str(values[1]) + "     " + str(avg2))
     
-    #check if the valeus are in the range, this will likely need to be tuned in the future
+    #check if the values are in the range and valid, this will likely need to be tuned in the future
     if values[0] < avg1*1.5 and values[0] > avg1*0.5:
         if values[1] < avg2*1.5 and values[1] > avg2*0.5:
-            return distance(values[0], values[1])
+            if valid:
+                return distance(values[0], values[1])
     
     return -1
     # Pause for a set period of time in seconds, this will need to be tuned.
