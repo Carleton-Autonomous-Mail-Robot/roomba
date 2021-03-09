@@ -43,7 +43,10 @@ def distance(dis1, dis2):
     # When too close to wall, returns constant 11.3449109014
     if str(abs(b)) == '11.3449109014':
         b=1
-    return "distance: " + str(abs(b)) + " angle: " + str(180 - A)
+        
+    out = "distance: " + str(abs(b)) + " angle: " + str(180 - A)
+    print(out)
+    return out
     
 
 #    when testing this printed nice headers but it's not needed anymore
@@ -83,8 +86,8 @@ def calculate():
         valid = False
     
     #prints values and averages for testing
-    print(str(values[0]) + "     " + str(avg1))
-    print(str(values[1]) + "     " + str(avg2))
+    print("Sensor1: " + str(values[0]) + "    avg: " + str(avg1))
+    print("Sensor2: " + str(values[1]) + "    avg: " + str(avg2))
     
     #check if the values are in the range and valid, this will likely need to be tuned in the future
     if values[0] < avg1*1.5 and values[0] > avg1*0.5:
