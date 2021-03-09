@@ -42,8 +42,8 @@ def distance(dis1, dis2):
     #print("Distance from wall is "+ str(b) +" centimeters")
     #print("Offset angle is "+ str(180 - A) +" degrees.")
     
-    # When too close to wall, returns constant 11.3449109014
-    if str(abs(b)) == '11.3449109014':
+    # When too close to wall, returns constant 10.2046768063
+    if dis1 == 10.2046768063 or dis2 == 10.2046768063:
         b=1
         
     out = "distance: " + str(abs(b)) + " angle: " + str(180 - A)
@@ -77,15 +77,11 @@ def calculate():
     avg1 = sum(stack1)/5
     avg2 = sum(stack2)/5
     
-    #insert new values, pop oldest values. Make sure they aren't crazy outliers
-    valid = True
-    if abs(values[0]) < 70 and abs(values[1]) < 70:
-        stack1.insert(0, values[0])
-        stack1.pop(5)
-        stack2.insert(0, values[1])
-        stack2.pop(5)
-    else:
-        valid = False
+    #insert new values, pop oldest values.
+    stack1.insert(0, values[0])
+    stack1.pop(5)
+    stack2.insert(0, values[1])
+    stack2.pop(5)
     
     #prints values and averages for testing
     print("Sensor1: " + str(values[0]) + "    avg: " + str(avg1))
@@ -98,21 +94,19 @@ def calculate():
                 return distance(values[0], values[1])
     
     return -1
-    # Pause for a set period of time in seconds, this will need to be tuned.
-    #time.sleep(1)
     
 def rosMain():
     rospy.init_node('IRSensor', anonymous=True)
     publisher = rospy.Publisher('perceptions', String, queue_size=10)
+    rate = rospy.Rate(5)
     
     while not rospy.is_shutdown():
         calc = calculate()
         if calc == -1:
-            time.sleep(0.2)
             pass
         else:
             publisher.publish(calc)
-            time.sleep(0.5)
+        rate.sleep()
 
 if __name__ == '__main__':
     try:
