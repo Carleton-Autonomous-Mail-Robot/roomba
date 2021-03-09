@@ -7,6 +7,10 @@ from std_msgs.msg import String
 
 def __new_client():
     reader = ServerReader()
+    if not reader.read_client_id() == '':
+        rospy.loginfo("Client ID read from file: "+reader.read_client_id())
+        return
+
     res = __make_request({"status": "good",
             "opperation": "newClient",
             "payload": "robot"})
@@ -15,26 +19,42 @@ def __new_client():
     
 
 def __client_info():
-    return None
+    reader = ServerReader()
+    return reader.read_client_id()
 
 def __check_mail():
-    if __client_info() is None:
-        res = requests.post(url)
+    id = __client_info()
+    if id is '':
+        pass
+    else:
+        rospy.loginfo('Making Request under client_id:'+__client_info())
+        res = __make_request({
+            "status": "good",
+            "opperation":"getMessage",
+            "clientID": str(id)
+        })
+        return res.json()['payload']
+    return None
+    
 
 def __make_request(json={}):
     reader = ServerReader()
     url = reader.get_url()
-    rospy.loginfo('Making a request to: '+url)
-    return requests.post("https://web-services-mail.herokuapp.com/",json=json)
+    #rospy.loginfo('Making a request to: '+url)
+    return requests.post(url,json=json)
 
 def rosMain():
     pub = rospy.Publisher('network', String, queue_size=5)
     rospy.init_node('networkDriver', anonymous=True)
-    rate = rospy.Rate(10)
+    rate = rospy.Rate(50)
     __new_client()
 
     while not rospy.is_shutdown():
-        rate.sleep()
+        msg = __check_mail()
+        if msg == "Not Found" or msg is None:
+            continue
+        rospy.loginfo('network('+msg+')')
+        pub.publish(msg)
 
 if __name__ == '__main__':
     try:

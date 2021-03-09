@@ -3,6 +3,7 @@
 # Simple test tool for the user interface.
 
 # @author: Patrick Gavigan
+# @author: Simon Yacoub
 
 import rospy
 from std_msgs.msg import String
@@ -11,47 +12,18 @@ from datetime import datetime
 
 startTime = 0   # Set the start time as a global variable
 
-def sendMailMission(publisher):
-    messageID = int(round(time.time() * 1000))  # Crude message ID
-    agentID = "BROADCAST"
-    userID = "user"
-    messageType = "tell"
-
+def mailMission(publisher):
+    
     # Prompt user for input (using Pyton 7 method, ROS does not use Python 3)
-    sender = raw_input("Please enter the sender location (Example: post1): ")
-    receiver = raw_input("Please enter the receiver location (Example: post4): ")
-    dock = raw_input("Please enter the dock location (Example: post5): ")
+    mission = raw_input("Please enter the delivery location")
+    message = "new mission to" + mission
     
     # Build message with the dock location, log and send it
-    messageType = "tell"
-    messageContent = "dockStation(" + str(dock) + ")"
-    message = "<" + str(messageID) + "," + userID + "," + messageType + "," + agentID + "," + messageContent + ">"
-    rospy.loginfo("Sending message: " + str(message))
+    #rospy.loginfo("Sending message: " + str(message))
     publisher.publish(message)
 
     # Give it a moment
     time.sleep(1)
-    
-    # Build message with the mail mission, log and send it
-    messageType = "achieve"
-    messageContent = "collectAndDeliverMail(" + str(sender) + "," + str(receiver) + ")"
-    message = "<" + str(messageID) + "," + userID + "," + messageType + "," + agentID + "," + messageContent + ">"
-    rospy.loginfo("Sending message: " + str(message))
-    publisher.publish(message)
-
-
-# Receive outbox messages. Just print everything.
-def receiveMessage(data):
-    rospy.loginfo("Received message: " + str(data.data))
-    
-    # Check if the message contains the delivered signal
-    if "mailUpdate(delivered)" in data.data:
-        global startTime
-        endTime = datetime.now()
-        rospy.loginfo("**** Mission complete ****")
-        rospy.loginfo("Start time was: " + str(startTime))
-        rospy.loginfo("End time was: " + str(endTime))
-        
 
 # Main program
 def rosMain():
@@ -59,21 +31,15 @@ def rosMain():
     # Init the node
     rospy.init_node('user', anonymous=True)
 
-    # Subscribe to outbox
-    rospy.Subscriber('outbox', String, receiveMessage)
-
-    # Setup the publisher for the result
-    publisher = rospy.Publisher('inbox', String, queue_size=10)
-
     # Sleep for 5 seconds, give everything a chance to come online.
     time.sleep(5)
 
-    # Prompt the use for the mailMission and send it
-    sendMailMission(publisher)
+    publisher = rospy.Publisher('inbox', String, queue_size=10)
 
+    mailMission(publisher)
     # Log the start time of the mission
-    global startTime
-    startTime = datetime.now()
+    #global startTime
+    #startTime = datetime.now()
     
     # spin() simply keeps python from exiting until this node is stopped
     rospy.spin()

@@ -43,11 +43,11 @@ class ServerReader():
         writing_file.write(server+'\n'+client_id)
         writing_file.close()
     
-    def read_client_id(self,client_id):
+    def read_client_id(self):
         script_dir = os.path.dirname(__file__)
         filename = 'server'
         fullpath = os.path.join(script_dir,filename)
-        clientid = ''
+        client_id = ''
         with open(fullpath,'r') as f:
             try:
                 client_id = f.read().splitlines()[1]
