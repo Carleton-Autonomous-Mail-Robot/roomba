@@ -34,9 +34,11 @@ def distance(dis1, dis2):
     R = 20
     #a = dis1, b = dis2
     r = math.sqrt(dis1 ** 2 + dis2 ** 2 - 2 * dis1 * dis2 * math.cos(R*math.pi/180))
-    B = math.asin((dis1*math.sin(R*math.pi/180))/r)*180/math.pi
+    #B = math.asin((dis1*math.sin(R*math.pi/180))/r)*180/math.pi
+    B = math.acos((r**2 + dis2**2 - dis1**2)/(2 * r * dis2)) * 180/math.pi
     A = 180 - B - R / 2
-    b = math.sin(B)*dis2/math.sin(A)
+    #b = math.sin(B)*dis2/math.sin(A)
+    b = math.sin(B*math.pi/180)*dis2/math.sin(A*math.pi/180)
     #print("Distance from wall is "+ str(b) +" centimeters")
     #print("Offset angle is "+ str(180 - A) +" degrees.")
     
