@@ -23,6 +23,10 @@ class WallfollowState(State):
 	def on_event(self, event):
 		if event == "bump":
 			return AvoidanceState()
+		if event == "newdest":
+			return InterState()
+		elif event == "dock":
+			return DockState()
 		return self
 
 
@@ -33,5 +37,27 @@ class AvoidanceState(State):
 	
 	def on_event(self, event):
 		if event == "foundwall":
-			return Wallfollowstate()
+			return WallfollowState()
+		return self
+		
+		
+class DockState(State):
+	"""
+	The state where we reached the final destination and want to dock to wait for new requests
+	"""
+	
+	def on_event(self, event):
+		if event == "newdest":
+			return InterState()
+		return self
+
+
+class InterState(State):
+	"""
+	The state where we reached an intermediate destination and are moving onto the next node
+	"""
+	
+	def on_event(self, event):
+		if event == "dirconfirm":
+			return WallfollowState()
 		return self

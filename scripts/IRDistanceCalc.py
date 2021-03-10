@@ -90,8 +90,7 @@ def calculate():
     #check if the values are in the range and valid, this will likely need to be tuned in the future
     if values[0] < avg1*1.5 and values[0] > avg1*0.5:
         if values[1] < avg2*1.5 and values[1] > avg2*0.5:
-            if valid:
-                return distance(values[0], values[1])
+            return distance(values[0], values[1])
     
     return -1
     

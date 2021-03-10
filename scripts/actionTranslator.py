@@ -26,20 +26,22 @@ def decodeAction(data, args):
         actionMessage = getTwistMesg("forward")
     elif(action == "backward"):
         actionMessage = getTwistMesg("backward")
-    elif(action == "left"): #Does a 90 degree turn left (stops robot first)
+    elif(action == "left"): #Does a 45 degree turn left (stops robot first)
         actionMessage = getTwistMesg("left")
-        decodeAction("stop", args)
+        tmp = String()
+        tmp.data = "stop"
+        decodeAction(tmp, args)
         drivePublisher.publish(actionMessage)
-        drivePublisher.publish(actionMessage)
-    elif(action == "right"): #does 90 degree turn right (stops robot first)
+    elif(action == "right"): #Does 45 degree turn right (stops robot first)
         actionMessage = getTwistMesg("right")
-        decodeAction("stop", args)
+        tmp = String()
+        tmp.data = "stop"
+        decodeAction(tmp, args)
         drivePublisher.publish(actionMessage)
-        drivePublisher.publish(actionMessage)
-    elif(action == "sright"): #small r motion for wall following
+    elif(action == "sright"): #small r + fwd motion for wall following
         actionMessage = getTwistMesg("sright")
         drivePublisher.publish(actionMessage)
-    elif(action == "sleft"): #small l motion for wall following
+    elif(action == "sleft"): #small l + fwd motion for wall following
         actionMessage = getTwistMesg("sleft")
         drivePublisher.publish(actionMessage)
     elif(action == "bleft"):    # big left motion to make space from wall
@@ -54,9 +56,9 @@ def decodeAction(data, args):
     drivePublisher.publish(actionMessage)
 
     # Handle the docking station cases
-    if action == "station(dock)":
+    if action == "dock":
         dockPublisher.publish()
-    elif action == "station(undock)":
+    elif action == "undock":
         undockPublisher.publish()   # Publish to the undock topic
         
         
@@ -76,10 +78,10 @@ def getTwistMesg(action):
     message = Twist()
     
     if action == "forward":
-        message.linear.x = 0.2
+        message.linear.x = 0.25
         message.angular.z = 0
     elif action == "backward":
-        message.linear.x = -0.2
+        message.linear.x = -0.25
         message.linear.z = 0
     elif action == "left":
         message.linear.x = 0
