@@ -19,10 +19,17 @@ def zone(dictionary_macs):
     if 'ea:2f:93:a6:98:20' in macs and 'fc:e2:2e:62:9b:3d' in macs:
         if dictionary_macs['fc:e2:2e:62:9b:3d'] > 5 and dictionary_macs['ea:2f:93:a6:98:20'] > 5:
             rospy.loginfo('AB')
+    elif '00:1a:7d:da:71:06' in macs and 'e2:77:fc:f9:04:93' in macs:
+        if dictionary_macs['00:1a:7d:da:71:06'] > 5 and dictionary_macs['e2:77:fc:f9:04:93'] > 5:
+            rospy.loginfo('CD')
     elif 'ea:2f:93:a6:98:20' in macs and dictionary_macs['ea:2f:93:a6:98:20'] < 4.5:
         rospy.loginfo('A')
     elif 'fc:e2:2e:62:9b:3d' in macs and dictionary_macs['fc:e2:2e:62:9b:3d'] < 4.5:
         rospy.loginfo('B')
+    elif '00:1a:7d:da:71:06' in macs and dictionary_macs['00:1a:7d:da:71:06'] < 4.5:
+        rospy.loginfo('C')
+    elif 'e2:77:fc:f9:04:93' in macs and dictionary_macs['e2:77:fc:f9:04:93'] < 4.5:
+        rospy.loginfo('D')
     else:
         rospy.loginfo('Zone was called and nothing happened')
     
