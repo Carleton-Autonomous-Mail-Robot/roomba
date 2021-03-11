@@ -68,8 +68,10 @@ class PathReader():
             navpaths = f.read()
             f.close()
         paths = navpaths.splitlines()
+        x = 0
         for l in paths:
-            csv = l.split(',')
-            macs[csv[0]] = (float(csv[1]),float(csv[2]))
+            newpath = l.split(',')
+            paths[x] = newpath
+            x = x + 1
         return paths
     
