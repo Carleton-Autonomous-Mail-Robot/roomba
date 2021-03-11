@@ -55,3 +55,21 @@ class ServerReader():
                 pass
             f.close()
         return client_id
+
+
+class PathReader():
+    
+    def read_paths(self):
+        script_dir = os.path.dirname(__file__)
+        filename = 'paths'
+        fullpath = os.path.join(script_dir,filename)
+        navpaths = ''
+        with open(fullpath,'r') as f:
+            navpaths = f.read()
+            f.close()
+        paths = navpaths.splitlines()
+        for l in paths:
+            csv = l.split(',')
+            macs[csv[0]] = (float(csv[1]),float(csv[2]))
+        return paths
+    

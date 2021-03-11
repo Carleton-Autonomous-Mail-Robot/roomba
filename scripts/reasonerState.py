@@ -3,20 +3,24 @@
 import rospy
 from std_msgs.msg import String
 from states import *
+from reader import PathReader
 import time
+import math
+
 
 #Takes delivery requests and environmental data and publishes actions
 #Subscribes to inbox and perceptions
 #Publishes to actions
 
-targetDestination = "" #target destination is the end goal of the robot and is a global variable
-interDestination = ""   # Intermediate destination before the target
-currState = WallfollowState()
+path = ""       # The selected path the robot is following
+targetNode = "" # Target destination is the end goal of the robot and is a global variable
+interNode = ""  # Intermediate destination before the target
+currState = DockState()
 beginTime = time.time()       # Used for telling how long robot is in certain states
 foundWall = True
 
 # Sensor information
-currLocation = "A"  # beacons in proximity
+currNode = "A"  # beacons in proximity
 currDistance = 10    # distance from/between beacons
 currWallDist = 0   # distance from wall
 currWallAngle = 0  # angle from wall
@@ -25,13 +29,14 @@ currBumper = ""     # bumper state
 # Translate the sensor data into actions then publish
 def reason(publisher):
     # Setup globals
+    global path
     global currState
-    global targetDestination
-    global interDestination
+    global targetNode
+    global interNode
     global beginTime
     global currBumper
     global currDistance
-    global currLocation
+    global currNode
     global currWallAngle
     global currWallDist
     global foundWall
@@ -45,12 +50,12 @@ def reason(publisher):
     if str(currState) == 'WallfollowState':
         
         # Are we at our destination?
-        if targetDestination == currLocation and currDistance < 10:
+        if targetNode == currNode and currDistance < 10:
             beginTime = time.time()
             currState = currState.on_event('dock')
             
         # Are we at our intermediate destination?
-        if interDestination == currLocation and currDistance < 10:
+        if interNode == currNode and currDistance < 10:
             beginTime = time.time()
             currState = currState.on_event('newdest')
         
@@ -116,12 +121,13 @@ def reason(publisher):
         now = time.time()
         if now - beginTime < 0.2:
             act = 'dock'
-        elif now - beginTime < 10:
-            if not targetDestination == "":
-                act = 'undock'
+        else:
+            if not targetNode == "":
+                act = 'backward'
+                beginTime = now
                 currState = currState.on_event("newdest")
     
-    # Robot has a new destination, adjust direction state
+    # Robot has a new destination, adjust bearing than move
     elif str(currState) == 'InterState':
         # Confirm we are heading in the correct direction
         act = "stop"
@@ -137,7 +143,7 @@ def perceive(data, args):
     # Setup global variables
     global currBumper
     global currDistance
-    global currLocation
+    global currNode
     global currWallAngle
     global currWallDist
     
@@ -152,15 +158,40 @@ def perceive(data, args):
     elif msg[0] == "distance:":
         currWallDist = float(msg[1])
         currWallAngle = float(msg[3])
+    elif msg[0] == "node:":
+        currNode = msg[1]
+        currDistance = msg[2]
 
 
+# Identifies the path to follow
 def setMission(data, args):
-    global targetDestination
+    global targetNode
+    global path
+    
+    (publisher) = args
+    
+    # Extract information from data
+    tmp = data.data.split()     # Break up message @ spaces
+    src = tmp[1]
+    targetNode = tmp[2]
+    
+    # Read information on paths and select valid one.
+    paths = PathReader().read_paths()
+    x=0
+    for p in paths:
+        if currNode == p[0] and targetNode == p[len(p)-1]:
+            break
+        x = x+1
+    
+    # If found valid path, set it
+    if x < len(paths)
+        path = paths[x]
     
     #extract the message data
     location = data.data
-    targetDestination = location #update targetLocation
-    rospy.loginfo("Target Destination updated to " + targetDestination) #log changes
+    targetNode = location #update targetLocation
+    rospy.loginfo("Target Destination updated to " + targetNode) #log changes
+    rospy.loginfo("Target Destination updated to " + targetNode)
     
 
 # Initialize the node, setup the publisher and subscriber

@@ -58,8 +58,6 @@ def decodeAction(data, args):
     # Handle the docking station cases
     if action == "dock":
         dockPublisher.publish()
-    elif action == "undock":
-        undockPublisher.publish()   # Publish to the undock topic
         
         
 '''
