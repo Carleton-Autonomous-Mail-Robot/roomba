@@ -74,8 +74,12 @@ def read_bluetooth(str_in, args):
     
     # Publish current zone and corresponding distances
     tmp = 'node: ' + zone(dict_macs)
-    if tmp == "CF" or tmp == "CD" or tmp == "CE":
-        tmp = tmp + ' ' + dict_macs[C]
+    if tmp == "CF":
+        tmp = tmp + ' ' + dict_macs[C] + ' ' + dict_macs[F]
+    if tmp == "CD":
+         tmp = tmp + ' ' + dict_macs[C] + ' ' + dict_macs[D]
+    if tmp == "CE":
+        tmp = tmp + ' ' + dict_macs[C] + ' ' + dict_macs[E] 
     pub.publish(tmp)
 
 

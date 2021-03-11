@@ -18,6 +18,7 @@ interNode = ""  # Intermediate destination before the target
 currState = DockState()
 beginTime = time.time()       # Used for telling how long robot is in certain states
 foundWall = True
+progress = 0        # tracks progress of current path. Used as index
 
 # Sensor information
 currNode = "A"  # beacons in proximity
@@ -40,6 +41,7 @@ def reason(publisher):
     global currWallAngle
     global currWallDist
     global foundWall
+    global progress
     
     # Extract the publisher
     (actionPublisher) = publisher
@@ -50,12 +52,12 @@ def reason(publisher):
     if str(currState) == 'WallfollowState':
         
         # Are we at our destination?
-        if targetNode == currNode and currDistance < 10:
+        if targetNode == currNode:
             beginTime = time.time()
             currState = currState.on_event('dock')
             
         # Are we at our intermediate destination?
-        if interNode == currNode and currDistance < 10:
+        if interNode == currNode:
             beginTime = time.time()
             currState = currState.on_event('newdest')
         
@@ -127,11 +129,36 @@ def reason(publisher):
                 beginTime = now
                 currState = currState.on_event("newdest")
     
-    # Robot has a new destination, adjust bearing than move
+    # Robot is at a node and has a new destination, adjust bearing than move
     elif str(currState) == 'InterState':
-        # Confirm we are heading in the correct direction
-        act = "stop"
-        currState = currState.on_event("dirconfirm")
+        now = time.time()
+        if now - beginTime < 0.1:
+            progress = progress + 1
+            interNode = path[progress+1]
+        elif now - beginTime < 3:
+            action = int(path[progress])
+            # Adjust direction you are facing
+            if action == -90:
+                if now - beginTime < 0.6:
+                    act = 'left'
+            elif action == 180:
+                if now - beginTime < 1.1:
+                    act = 'left'
+            elif action == 90:
+                if now - beginTime < 0.6:
+                    act = 'right'
+            elif action == 0:
+                if now - beginTime < 1.1:
+                    act = 'stop'
+                    
+            # Move forward into new region
+            if now - beginTime > 1.5:
+                act = 'forward'
+        else:
+            # Begin wall following again
+            act = "stop"
+            currState = currState.on_event("dirconfirm")
+        
         
     # Publish desired acton
     if not act == '':
@@ -159,14 +186,24 @@ def perceive(data, args):
         currWallDist = float(msg[1])
         currWallAngle = float(msg[3])
     elif msg[0] == "node:":
+        # Register current location
         currNode = msg[1]
-        currDistance = msg[2]
+        
+        if len(currNode) == 2:
+            # Choosing which distance to track, depending on destination
+            if interNode == currNode[0]:
+                currDistance = msg[2]
+            if interNode == currNode[1]:
+                currDistance = msg[3]
+        else:
+            currDistance = msg[2]
 
 
 # Identifies the path to follow
 def setMission(data, args):
     global targetNode
     global path
+    global progress
     
     (publisher) = args
     
@@ -186,12 +223,11 @@ def setMission(data, args):
     # If found valid path, set it
     if x < len(paths)
         path = paths[x]
+        progress = 0
     
-    #extract the message data
-    location = data.data
-    targetNode = location #update targetLocation
-    rospy.loginfo("Target Destination updated to " + targetNode) #log changes
+    # Log changes
     rospy.loginfo("Target Destination updated to " + targetNode)
+    rospy.loginfo("Path set to " + path)
     
 
 # Initialize the node, setup the publisher and subscriber
