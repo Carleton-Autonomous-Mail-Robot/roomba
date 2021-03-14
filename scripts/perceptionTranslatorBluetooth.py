@@ -9,59 +9,73 @@
 import rospy
 from bluepy.btle import Scanner
 from std_msgs.msg import String
+from reader import BeaconReader
 
 
-# Initialize constants
-A = 'ea:2f:93:a6:98:20'
-B = 'fc:e2:2e:62:9b:3d'
-C = 'e2:77:fc:f9:04:93'
-D = '00:00:00:00:00:00'
-E = '11:11:11:11:11:11'
+nodes = dict()  # used to get the correcponding node letter of MAC. Eg: nodes['A'] = MAC
+proxDistance = 0.6  # How far you have to be from node to be considered in it's region
 
 '''
-Returns the zone the robot is currently located at.
+Assign macs to node letters
+'''
+def set_Zones():
+    global nodes
+    
+    read = BeaconReader()
+    beacons = read.read_beacons()
+    for tmp in beacons:
+        nodes[tmp[3]] = tmp[0]
+
+'''
+Returns the zone/region the robot is currently located at.
 '''
 def zone(dictionary_macs):
-    macs = dictionary_macs.keys()
+    global proxdistance
+    global nodes
     
-    if A in macs and B in macs:
-        if dictionary_macs[B] > 5 and dictionary_macs[A] > 5:
-            rospy.loginfo('AB')
-    elif A in macs and dictionary_macs[A] < 4.5:
-        rospy.loginfo('A')
-    elif B in macs and dictionary_macs[B] < 4.5:
-        rospy.loginfo('B')
-    elif C in macs:
-        if D in macs:
-            if dictionary_macs[D] < 0.5:
-                rospy.loginfo('D')
-                return 'D'
-            elif dictionary_macs[D] < 2 and dictionary_macs[C] < 2:
-                rospy.loginfo('CD')
-                return 'CD'
-        if E in macs:
-            if dictionary_macs[E] < 0.5:
-                rospy.loginfo('E')
-                return 'E'
-            elif dictionary_macs[C] > 0.5:
-                rospy.loginfo('CE')
-                return 'CE'
-        if dictionary_macs[C] < 0.5:
-            rospy.loginfo('C')
-            return 'C'
-        elif dictionary_macs[C] < 3:
-            rospy.loginfo('CF')
-            return 'CF'
-        else:
-            rospy.loginfo('F')
-            return 'F'
+    # Find the closest MAC/node
+    shortest = 100
+    closeMAC = ''
+    closeNode = ''
+    for key in dictionary_macs:
+        if dictionary_macs[key] < shortest:
+            shortest = dictionary_macs[key]
+            closeMAC = key
+            closeNode = list(nodes.values()).index(key)
+    
+    # If directly at node
+    if shortest < proxDistance:
+        return closeNode
+    # Special case for when at imaginary node F
+    elif closeNode == 'C' and shortest > 1.6:
+        return 'F'
+    # Special case for when at imaginary region CF
+    elif closeNode == 'C' and shortest < 1.6:
+        return 'CF'
+    # If between nodes (in a region)
     else:
-        rospy.loginfo('Zone was called and nothing happened')
-    
+        
+        # Find the 2nd closest MAC/node
+        shortest2 = 100
+        closeMAC2 = ''
+        closeNode2 = ''
+        for key in dictionary_macs:
+            if dictionary_macs[key] < shortest2 and not key == closeMAC:
+                shortest2 = dictionary_macs[key]
+                closeMAC2 = key
+                closeNode2 = list(nodes.values()).index(key)
+                
+        # Send region result
+        out = closeNode1 + closeNode2
+        return out   
 
-    
+
+'''
+Find out bluetooth information, send zone and distance measurements to reasoner
+'''
 def read_bluetooth(str_in, args):
     (pub) = args
+    set_Zones()
     
     split_lines = str_in.data.splitlines() #splits the published data on new line
     dict_macs = dict()
@@ -73,14 +87,14 @@ def read_bluetooth(str_in, args):
         return
     
     # Publish current zone and corresponding distances
-    tmp = 'node: ' + zone(dict_macs)
-    if tmp == "CF":
-        tmp = tmp + ' ' + dict_macs[C] + ' ' + dict_macs[F]
-    if tmp == "CD":
-         tmp = tmp + ' ' + dict_macs[C] + ' ' + dict_macs[D]
-    if tmp == "CE":
-        tmp = tmp + ' ' + dict_macs[C] + ' ' + dict_macs[E] 
-    pub.publish(tmp)
+    tmp = zone(dict_macs)
+    out = ''
+    if len(tmp) == 2:
+        out = 'node: ' + tmp + ' ' + dict_macs[tmp[0]] + ' ' + dict_macs[tmp[1]]
+    else:
+        out = 'node: ' + tmp + ' ' + dict_macs[tmp]
+    rospy.loginfo(out)
+    pub.publish(out)
 
 
 def rosMain():

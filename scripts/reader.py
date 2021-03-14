@@ -18,7 +18,7 @@ class BeaconReader():
         lines = beacons.splitlines()
         for l in lines:
             csv = l.split(',')
-            macs[csv[0]] = (float(csv[1]),float(csv[2]))
+            macs[csv[0]] = (float(csv[1]),float(csv[2]),csv[3])
         return macs
 
 
@@ -56,22 +56,3 @@ class ServerReader():
             f.close()
         return client_id
 
-
-class PathReader():
-    
-    def read_paths(self):
-        script_dir = os.path.dirname(__file__)
-        filename = 'paths'
-        fullpath = os.path.join(script_dir,filename)
-        navpaths = ''
-        with open(fullpath,'r') as f:
-            navpaths = f.read()
-            f.close()
-        paths = navpaths.splitlines()
-        x = 0
-        for l in paths:
-            newpath = l.split(',')
-            paths[x] = newpath
-            x = x + 1
-        return paths
-    
