@@ -65,8 +65,13 @@ def reason(publisher):
         if currBumper == "unpressed":
             # Since there are no obstacles, check status of robot relative to wall
     
+            # Turned too far
+            if currWallAngle < 60:
+                act = "left"
+            elif currWallAngle > 120:
+                act = "right"
             # Too far from wall, make small correction right. ensure robot angle to wall is proper
-            if currWallDist > 25 and currWallAngle > 90:
+            elif currWallDist > 30 and currWallAngle > 90:
                 act = "sright"
             # Too close to wall, so send bleft msg
             elif currWallDist == 1 and currWallAngle == 90.0:
@@ -74,7 +79,7 @@ def reason(publisher):
                     act = "bleft"
                     beginTime = time.time()
             # Too close to wall, make small correction left. ensure robot angle to wall is proper
-            elif currWallDist < 15 and currWallAngle < 90:
+            elif currWallDist < 18 and currWallAngle < 90:
                 act = "sleft"
             else:
                 act = "forward"
