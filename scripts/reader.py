@@ -83,7 +83,7 @@ class NodeReader():
             newval = dict()
             x=0
             while x < len(val):
-                newval[val[x]] = val[x+1]
+                newval[val[x]] = int(val[x+1])
                 x = x+2
             distDict[msg[0]] = newval 
         return distDict
@@ -91,7 +91,7 @@ class NodeReader():
     # Read nodeTraversal
     def read_traversal(self):
         script_dir = os.path.dirname(__file__)
-        filename = 'Traversal'
+        filename = 'nodeTraversal'
         fullpath = os.path.join(script_dir,filename)
         traversal = ''
         with open(fullpath,'r') as f:
@@ -105,7 +105,7 @@ class NodeReader():
             newval = dict()
             x=0
             while x < len(val):
-                newval[val[x]] = val[x+1]
+                newval[val[x]] = int(val[x+1])
                 x = x+2
             travDict[msg[0]] = newval 
         return travDict
