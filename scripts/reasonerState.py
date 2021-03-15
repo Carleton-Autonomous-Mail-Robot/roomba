@@ -3,7 +3,8 @@
 import rospy
 from std_msgs.msg import String
 from states import *
-from reader import PathReader
+from reader import *
+from pathFinder import *
 import time
 import math
 
@@ -140,7 +141,7 @@ def reason(publisher):
         if now - beginTime < 0.1:
             progress = progress + 1
             interNode = path[progress+1]
-        elif now - beginTime < 3:
+        elif now - beginTime < 4:
             action = int(path[progress])
             # Adjust direction you are facing
             if action == -90:
@@ -182,7 +183,7 @@ def perceive(data, args):
     # Extract the publisher and the message data
     (actionPublisher) = args
     message = str(data.data)
-    msg = message.split()
+    msg = message.split()   # split @ space
     
     # Find perception source and update curr status variables
     if msg[0] == "bumper:":
@@ -218,17 +219,9 @@ def setMission(data, args):
     targetNode = tmp[2]
     
     # Read information on paths and select valid one.
-    paths = PathReader().read_paths()
-    x=0
-    for p in paths:
-        if currNode == p[0] and targetNode == p[len(p)-1]:
-            break
-        x = x+1
-    
-    # If found valid path, set it
-    if x < len(paths)
-        path = paths[x]
-        progress = 0
+    finder = PathFinder()
+    path = finder.find_path(src,targetNode)
+    progress = 0
     
     # Log changes
     rospy.loginfo("Target Destination updated to " + targetNode)

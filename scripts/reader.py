@@ -24,6 +24,9 @@ class BeaconReader():
 
 class ServerReader():
 
+    '''
+        A utility to read from the server file
+    '''
     def get_url(self):
         script_dir = os.path.dirname(__file__)
         filename = 'server'
@@ -55,4 +58,55 @@ class ServerReader():
                 pass
             f.close()
         return client_id
+        
+        
+class NodeReader():
+
+    '''
+        A utility to read from the node files
+    '''
+    
+    # Read nodeDistances
+    def read_distances(self):
+        script_dir = os.path.dirname(__file__)
+        filename = 'nodeDistances'
+        fullpath = os.path.join(script_dir,filename)
+        distances = ''
+        with open(fullpath,'r') as f:
+            distances = f.read()
+            f.close()
+        distDict = dict()
+        lines = distances.splitlines()
+        for l in lines:
+            msg = l.split(':')
+            val = msg[1].split()
+            newval = dict()
+            x=0
+            while x < len(val):
+                newval[val[x]] = val[x+1]
+                x = x+2
+            distDict[msg[0]] = newval 
+        return distDict
+        
+    # Read nodeTraversal
+    def read_traversal(self):
+        script_dir = os.path.dirname(__file__)
+        filename = 'Traversal'
+        fullpath = os.path.join(script_dir,filename)
+        traversal = ''
+        with open(fullpath,'r') as f:
+            traversal = f.read()
+            f.close()
+        travDict = dict()
+        lines = traversal.splitlines()
+        for l in lines:
+            msg = l.split(':')
+            val = msg[1].split()
+            newval = dict()
+            x=0
+            while x < len(val):
+                newval[val[x]] = val[x+1]
+                x = x+2
+            travDict[msg[0]] = newval 
+        return travDict
 

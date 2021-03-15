@@ -1,5 +1,3 @@
-{"post1": [0, 4],
- "post2": [0, 2], 
- "post3": [2, 2], 
- "post4": [2, 0], 
- "post5": [2, 4]}
+CF:CE 0 CD -90
+CE:CF 0 CD 90
+CD:CF 0 CE 90

@@ -3,7 +3,7 @@
 
 @author Gabriel Ciolac
 @last-edit 2021/02/10-22:04
-@contributers 
+@contributers Devon Daley
 '''
 
 import rospy
@@ -66,14 +66,17 @@ def zone(dictionary_macs):
                 closeNode2 = list(nodes.values()).index(key)
                 
         # Send region result
-        out = closeNode1 + closeNode2
-        return out   
+        str1 = ''
+        out = sorted(closeNode1,closeNode2)
+        return str1.join(out)
 
 
 '''
 Find out bluetooth information, send zone and distance measurements to reasoner
 '''
 def read_bluetooth(str_in, args):
+    global nodes
+    
     (pub) = args
     set_Zones()
     
@@ -89,10 +92,15 @@ def read_bluetooth(str_in, args):
     # Publish current zone and corresponding distances
     tmp = zone(dict_macs)
     out = ''
-    if len(tmp) == 2:
-        out = 'node: ' + tmp + ' ' + dict_macs[tmp[0]] + ' ' + dict_macs[tmp[1]]
+    
+    # Special case imaginary F
+    if tmp == 'F' or tmp == 'CF':
+        out = 'node: ' + tmp + ' ' + dict_macs[nodes['C']]
+    # Not Special case
+    elif len(tmp) == 2:
+        out = 'node: ' + tmp + ' ' + dict_macs[nodes[tmp[0]]] + ' ' + dict_macs[nodes[tmp[1]]]
     else:
-        out = 'node: ' + tmp + ' ' + dict_macs[tmp]
+        out = 'node: ' + tmp + ' ' + dict_macs[nodes[tmp]]
     rospy.loginfo(out)
     pub.publish(out)
 
