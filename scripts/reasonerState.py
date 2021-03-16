@@ -207,6 +207,7 @@ def perceive(data, args):
 
 # Identifies the path to follow
 def setMission(data, args):
+    global currNode
     global targetNode
     global path
     global progress
@@ -215,12 +216,12 @@ def setMission(data, args):
     
     # Extract information from data
     tmp = data.data.split()     # Break up message @ spaces
-    src = tmp[1]
+    currNode = tmp[1]
     targetNode = tmp[2]
     
     # Read information on paths and select valid one.
     finder = PathFinder()
-    path = finder.find_path(src,targetNode)
+    path = finder.find_path(currNode,targetNode)
     progress = 0
     
     # Log changes
