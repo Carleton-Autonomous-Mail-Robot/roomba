@@ -3,12 +3,13 @@
 # takes in inputs from an analog to digital converter connected to IR sensors and converts to cm before
 #     using the two distance measurements to calculate teh robot's distance from the wall
 
-# Author: Jozef Tierney
+# Author: Jozef Tierney and Devon Daley
 
 import time
 import math
 from std_msgs.msg import String
 import rospy
+import sys
 
 # Import the ADS1x15 module.
 import Adafruit_ADS1x15
@@ -33,12 +34,21 @@ def distance(dis1, dis2):
     R = 20
     #a = dis1, b = dis2
     r = math.sqrt(dis1 ** 2 + dis2 ** 2 - 2 * dis1 * dis2 * math.cos(R*math.pi/180))
-    B = math.asin((dis1*math.sin(R*math.pi/180))/r)*180/math.pi
+    #B = math.asin((dis1*math.sin(R*math.pi/180))/r)*180/math.pi
+    B = math.acos((r**2 + dis2**2 - dis1**2)/(2 * r * dis2)) * 180/math.pi
     A = 180 - B - R / 2
-    b = math.sin(B)*dis2/math.sin(A)
+    #b = math.sin(B)*dis2/math.sin(A)
+    b = math.sin(B*math.pi/180)*dis2/math.sin(A*math.pi/180)
     #print("Distance from wall is "+ str(b) +" centimeters")
     #print("Offset angle is "+ str(180 - A) +" degrees.")
-    return "distance: " + str(b)
+    
+    # When too close to wall, returns constant 10.2046768063
+    if dis1 == 10.2046768063 or dis2 == 10.2046768063:
+        b=1
+        
+    out = "distance: " + str(abs(b)) + " angle: " + str(180 - A)
+    print(out)
+    return out
     
 
 #    when testing this printed nice headers but it's not needed anymore
@@ -66,36 +76,36 @@ def calculate():
     #calculate averages
     avg1 = sum(stack1)/5
     avg2 = sum(stack2)/5
-    #insert new values, pop oldest values
+    
+    #insert new values, pop oldest values.
     stack1.insert(0, values[0])
     stack1.pop(5)
     stack2.insert(0, values[1])
     stack2.pop(5)
+    
     #prints values and averages for testing
-    print(str(values[0]) + "     " + str(avg1))
-    print(str(values[1]) + "     " + str(avg2))
-    #check if the valeus are in the range, this will likely need to be tuned in the future
+    print("Sensor1: " + str(values[0]) + "    avg: " + str(avg1))
+    print("Sensor2: " + str(values[1]) + "    avg: " + str(avg2))
+    
+    #check if the values are in the range and valid, this will likely need to be tuned in the future
     if values[0] < avg1*1.5 and values[0] > avg1*0.5:
         if values[1] < avg2*1.5 and values[1] > avg2*0.5:
             return distance(values[0], values[1])
     
     return -1
-    # Pause for a set period of time in seconds, this will need to be tuned.
-    #time.sleep(1)
     
 def rosMain():
     rospy.init_node('IRSensor', anonymous=True)
     publisher = rospy.Publisher('perceptions', String, queue_size=10)
-    try:
-        while True:
-            calc = calculate()
-            if calc == -1:
-                pass
-            else:
-                publisher.publish(calc)
-            time.sleep(0.5)
-    except KeyboardInterrupt:
-        sys.exit(0)
+    rate = rospy.Rate(5)
+    
+    while not rospy.is_shutdown():
+        calc = calculate()
+        if calc == -1:
+            pass
+        else:
+            publisher.publish(calc)
+        rate.sleep()
 
 if __name__ == '__main__':
     try:
