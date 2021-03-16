@@ -43,14 +43,23 @@ def __get_distance():
     
     return distances
 
-
-
+def __calc_average(mac, distance):
+    averages[mac].insert(0, distance)
+    averages[mac].pop(5)
+    avg = sum(averages[mac])/5
+    if distance < avg * 1.25 and distance > avg * 0.75:
+        return true
+    return false
 
 def rosMain():
     pub = rospy.Publisher('beacons', String, queue_size=5)
     rospy.init_node('bluetoothBeacons', anonymous=True)
     rate = rospy.Rate(10)
-
+    averages = dict()
+    averages[MAC1] = [0, 0, 0, 0, 0]
+    averages[MAC2] = [0, 0, 0, 0, 0]
+    averages[MAC3] = [0, 0, 0, 0, 0]
+    
     while not rospy.is_shutdown():
         current_distances = __get_distance()
         if current_distances is None:
@@ -59,9 +68,11 @@ def rosMain():
             MAC_ADDRs = current_distances.keys()
             to_send = ''
             for MAC in MAC_ADDRs:
+                outlier = __calc_average(MAC, current_distances[MAC])
                 rospy.loginfo('Beacon: '+str(MAC)+','+str(current_distances[MAC])+'m')
                 to_send = to_send +str(MAC)+','+str(current_distances[MAC]) + '\n'
-            pub.publish(to_send)
+            if outlier:
+                pub.publish(to_send)
         rate.sleep()
 
 if __name__ == '__main__':
@@ -69,3 +80,6 @@ if __name__ == '__main__':
         rosMain()
     except rospy.ROSInterruptException:
         pass
+
+
+
