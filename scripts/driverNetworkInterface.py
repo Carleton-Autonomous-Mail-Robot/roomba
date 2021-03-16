@@ -3,7 +3,7 @@ from reader import ServerReader
 import rospy
 from std_msgs.msg import String
 
-SERVER = 'http://127.0.0.1:8000'
+SERVER = 'https://web-services-mail.herokuapp.com'
 
 
 def __new_client():
