@@ -13,7 +13,7 @@ from reader import BeaconReader
 
 
 nodes = dict()  # used to get the correcponding node letter of MAC. Eg: nodes['A'] = MAC
-proxDistance = 0.6  # How far you have to be from node to be considered in it's region
+proxDistance = 0.4  # How far you have to be from node to be considered in it's region
 
 '''
 Assign macs to node letters
@@ -24,7 +24,7 @@ def set_Zones():
     read = BeaconReader()
     beacons = read.read_beacons()
     for tmp in beacons:
-        nodes[tmp[3]] = tmp[0]
+        nodes[beacons[tmp][2]] = tmp
 
 '''
 Returns the zone/region the robot is currently located at.
@@ -39,9 +39,11 @@ def zone(dictionary_macs):
     closeNode = ''
     for key in dictionary_macs:
         if dictionary_macs[key] < shortest:
-            shortest = dictionary_macs[key]
-            closeMAC = key
-            closeNode = list(nodes.values()).index(key)
+            for k in nodes:
+                if nodes[k] == key:
+                    shortest = dictionary_macs[key]
+                    closeMAC = key
+                    closeNode = k
     
     # If directly at node
     if shortest < proxDistance:
@@ -54,21 +56,21 @@ def zone(dictionary_macs):
         return 'CF'
     # If between nodes (in a region)
     else:
-        
         # Find the 2nd closest MAC/node
         shortest2 = 100
         closeMAC2 = ''
         closeNode2 = ''
         for key in dictionary_macs:
             if dictionary_macs[key] < shortest2 and not key == closeMAC:
-                shortest2 = dictionary_macs[key]
-                closeMAC2 = key
-                closeNode2 = list(nodes.values()).index(key)
+                for k in nodes:
+                    if nodes[k] == key:
+                        shortest2 = dictionary_macs[key]
+                        closeMAC2 = key
+                        closeNode2 = k
                 
         # Send region result
-        str1 = ''
-        out = sorted(closeNode1,closeNode2)
-        return str1.join(out)
+        out = ''.join(sorted((closeNode,closeNode2)))
+        return out
 
 
 '''
@@ -95,12 +97,16 @@ def read_bluetooth(str_in, args):
     
     # Special case imaginary F
     if tmp == 'F' or tmp == 'CF':
-        out = 'node: ' + tmp + ' ' + dict_macs[nodes['C']]
+        dist = 1 - int(dict_macs[nodes['C']])
+        if dist < 0:
+            dist = 0
+        out = 'node: ' + tmp + ' ' + str(dist)
     # Not Special case
     elif len(tmp) == 2:
-        out = 'node: ' + tmp + ' ' + dict_macs[nodes[tmp[0]]] + ' ' + dict_macs[nodes[tmp[1]]]
+        out = 'node: ' + tmp + ' ' + str(dict_macs[nodes[tmp[0]]]) + ' ' + str(dict_macs[nodes[tmp[1]]])
     else:
-        out = 'node: ' + tmp + ' ' + dict_macs[nodes[tmp]]
+        out = 'node: ' + tmp + ' ' + str(dict_macs[nodes[tmp[0]]])
+        
     rospy.loginfo(out)
     pub.publish(out)
 

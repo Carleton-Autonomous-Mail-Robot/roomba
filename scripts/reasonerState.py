@@ -72,13 +72,13 @@ def reason(publisher):
             elif currWallAngle > 120:
                 act = "right"
             # Too far from wall, make small correction right. ensure robot angle to wall is proper
-            elif currWallDist > 30 and currWallAngle > 90:
+            elif currWallDist > 28 and currWallAngle > 90:
                 act = "sright"
             # Too close to wall, so send bleft msg
-            elif currWallDist == 1 and currWallAngle == 90.0:
-                if time.time() - beginTime > 0.75:  # consecutive bleft msgs is a problem, so put 0.5s delay between calls
-                    act = "bleft"
-                    beginTime = time.time()
+            elif currWallDist == 1 and currWallAngle == 90.0 and time.time() - beginTime > 0.75:
+                # consecutive bleft msgs is a problem, so put 0.75s delay between calls
+                act = "bleft"
+                beginTime = time.time()
             # Too close to wall, make small correction left. ensure robot angle to wall is proper
             elif currWallDist < 18 and currWallAngle < 90:
                 act = "sleft"

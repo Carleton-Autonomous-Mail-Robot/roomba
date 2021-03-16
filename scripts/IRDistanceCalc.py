@@ -41,9 +41,8 @@ def distance(dis1, dis2):
     b = math.sin(B*math.pi/180)*dis2/math.sin(A*math.pi/180)
     #print("Distance from wall is "+ str(b) +" centimeters")
     #print("Offset angle is "+ str(180 - A) +" degrees.")
-    
     # When too close to wall, returns constant 10.2046768063
-    if dis1 == 10.2046768063 or dis2 == 10.2046768063:
+    if dis1 < 10.21 or dis2 < 10.21:
         b=1
         
     out = "distance: " + str(abs(b)) + " angle: " + str(180 - A)
