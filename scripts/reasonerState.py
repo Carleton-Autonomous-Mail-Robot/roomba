@@ -22,8 +22,8 @@ foundWall = True
 progress = 0        # tracks progress of current path. Used as index
 
 # Sensor information
-currNode = "A"  # beacons in proximity
-currDistance = 10    # distance from/between beacons
+currNode = "F"  # beacons in proximity
+currDistance = 3    # distance from/between beacons
 currWallDist = 0   # distance from wall
 currWallAngle = 0  # angle from wall
 currBumper = ""     # bumper state

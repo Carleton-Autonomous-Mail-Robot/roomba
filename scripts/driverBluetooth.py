@@ -20,7 +20,7 @@ averages = dict()
 '''
 def __read_RSSI():
     reader = BeaconReader()
-    ble_list = Scanner().scan(0.5)
+    ble_list = Scanner().scan(0.2)
     found_beacons = dict()
     for dev in ble_list:
         if dev.addr in reader.read_beacons().keys():
@@ -67,41 +67,68 @@ def rosMain():
     reader = BeaconReader()
     beacons = reader.read_beacons()
     
-    for n in beacons: 
-        averages[n] = [0, 0, 0, 0, 0]
-    
     while not rospy.is_shutdown():
         
-        # Get sums of 10 samples
-        samples = 0
+        # Initialize values
+        samples = dict()
         sumDist = dict()
-        while (samples < 10)
+        prevdist = dict()
+        
+        # Set default values for dicts
+        for mac in beacons.keys():
+            sumDist[mac] = 0
+            samples[mac] = 10
+        
+        # Take 10 samples, get sum
+        count = 0
+        valid = True
+        while (count < 10):
             distances = __get_distance()
-            # Do it for every different beacon
-            for mac in distances.keys():
-                sumDist[mac] += distances[mac]
-            rate.sleep()
-            samples += 1
+            
+            if not distances == None:
+                outlier = False
+                # Check all distances of macs, see if an obvious outlier
+                for mac in distances.keys():
+                    try:
+                        if abs(distances[mac] - prevdist[mac]) > 1:
+                            samples[mac] -= 1
+                            outlier = True
+                    except KeyError:
+                        pass
+                    except TypeError:
+                        pass
+                
+                if not outlier:
+                    # Get sum for every different beacon
+                    for mac in distances.keys():
+                        prevdist[mac] = distances[mac]
+                        sumDist[mac] = sumDist[mac] + distances[mac]
+                rate.sleep()
+                count += 1
+            else:
+                valid = False
         
-        # Find average of 10 samples (1 per second)
-        avg = dict()
-        for mac in sumDist:
-            avg[mac] = sumDist[mac]/10
-        
-        # Construct message to publish and filter outlier
-        MAC_ADDRs = avg.keys()
-        to_send = ''
-        for MAC in MAC_ADDRs:
-            outlier = __calc_average(MAC, avg[MAC])
-            if not outlier:
+        if valid:
+            # Find average of 10 samples (1 per second)
+            avg = dict()
+            for mac in sumDist:
+                if not samples[mac] == 0: 
+                    avg[mac] = sumDist[mac]/samples[mac]
+                else:
+                    avg[mac] = 100
+                if avg[mac] == 0:
+                    avg[mac] = 100
+            
+            # Construct message to publish
+            MAC_ADDRs = avg.keys()
+            to_send = ''
+            for MAC in MAC_ADDRs:
                 rospy.loginfo('Beacon: '+str(MAC)+','+str(avg[MAC])+'m')
                 to_send = to_send +str(MAC)+','+str(avg[MAC]) + '\n'
-        
-        # If at least 1 beacon wasnt an outlier, then publish
-        if not to_send == '':
-            pub.publish(to_send)
             
-        rate.sleep()
+            # If at least 1 beacon wasnt an outlier, then publish
+            if not to_send == '':
+                pub.publish(to_send)
 
 if __name__ == '__main__':
     try:
