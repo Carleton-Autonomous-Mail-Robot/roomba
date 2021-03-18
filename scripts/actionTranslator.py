@@ -22,11 +22,8 @@ def decodeAction(data, args):
     rospy.loginfo("Action: " + action)
     
     #handle basic movement commands from actions topic
-    if(action == "forward"):
-        actionMessage = getTwistMesg("forward")
-    elif(action == "backward"):
-        actionMessage = getTwistMesg("backward")
-    elif(action == "left"): #Does a 45 degree turn left (stops robot first)
+    actionMessage = getTwistMesg(action)
+    if(action == "left"): #Does a 45 degree turn left (stops robot first)
         actionMessage = getTwistMesg("left")
         tmp = String()
         tmp.data = "stop"
@@ -38,27 +35,16 @@ def decodeAction(data, args):
         tmp.data = "stop"
         decodeAction(tmp, args)
         drivePublisher.publish(actionMessage)
-    elif(action == "sright"): #small r + fwd motion for wall following
-        actionMessage = getTwistMesg("sright")
-        drivePublisher.publish(actionMessage)
-    elif(action == "sleft"): #small l + fwd motion for wall following
-        actionMessage = getTwistMesg("sleft")
-        drivePublisher.publish(actionMessage)
-    elif(action == "bleft"):    # big left motion to make space from wall
-        actionMessage = getTwistMesg("bleft")
-        drivePublisher.publish(actionMessage)
-    elif(action == "stop"): #stops the robot
-        actionMessage = getTwistMesg("stop")
-    else:
-        actionMessage = getTwistMesg("idle")
-
-    #publish action
-    drivePublisher.publish(actionMessage)
 
     # Handle the docking station cases
     if action == "dock":
         dockPublisher.publish()
-        
+    elif action == 'undock':
+        undockPublisher.publish()
+    else:
+        #publish action
+        drivePublisher.publish(actionMessage)
+    
         
 '''
 Get a Twist message which consists of a linear and angular component which can be negative or positive.
@@ -76,10 +62,10 @@ def getTwistMesg(action):
     message = Twist()
     
     if action == "forward":
-        message.linear.x = 0.25
+        message.linear.x = 0.1
         message.angular.z = 0
     elif action == "backward":
-        message.linear.x = -0.25
+        message.linear.x = -0.2
         message.linear.z = 0
     elif action == "left":
         message.linear.x = 0
@@ -88,11 +74,14 @@ def getTwistMesg(action):
         message.linear.x = 0
         message.angular.z = -4
     elif action == "sleft":
-        message.linear.x = 0.1
-        message.angular.z = 0.25
+        message.linear.x = 0.05
+        message.angular.z = 0.5
     elif action == "sright":
-        message.linear.x = 0.1
-        message.angular.z = -0.25
+        message.linear.x = 0.05
+        message.angular.z = -0.5
+    elif action == "avoidright":
+        message.linear.x = 0.08
+        message.angular.z = -0.5
     elif action == "bleft":
         message.linear.x = -0.1
         message.angular.z = 0.5

@@ -56,9 +56,8 @@ def reason(publisher):
         if targetNode == currNode:
             beginTime = time.time()
             currState = currState.on_event('dock')
-            
         # Are we at our intermediate destination?
-        if interNode == currNode:
+        elif interNode == currNode:
             beginTime = time.time()
             currState = currState.on_event('newdest')
         
@@ -66,16 +65,14 @@ def reason(publisher):
         if currBumper == "unpressed":
             # Since there are no obstacles, check status of robot relative to wall
     
-            # Turned too far
-            if currWallAngle < 60:
-                act = "left"
-            elif currWallAngle > 120:
-                act = "right"
+            # when entering hallway, IR readings will suddenly go high
+            if currWallDist > 50:
+                act = "forward"
             # Too far from wall, make small correction right. ensure robot angle to wall is proper
             elif currWallDist > 28 and currWallAngle > 90:
                 act = "sright"
-            # Too close to wall, so send bleft msg
-            elif currWallDist == 1 and currWallAngle == 90.0 and time.time() - beginTime > 0.75:
+            # Touching wall, so send bleft msg to correct
+            elif currWallDist == 1 and time.time() - beginTime > 0.75:
                 # consecutive bleft msgs is a problem, so put 0.75s delay between calls
                 act = "bleft"
                 beginTime = time.time()
@@ -85,7 +82,7 @@ def reason(publisher):
             else:
                 act = "forward"
                 
-        elif currBumper == "Lpressed" or (currBumper == "Rpressed" and currWallDist > 11):
+        elif (currBumper == "Lpressed" or currBumper == "Rpressed") and time.time() - beginTime >2:
             act = "backward"
             beginTime = time.time()
             foundWall = False
@@ -97,14 +94,17 @@ def reason(publisher):
         now = time.time()
         print(now - beginTime)
         
+        # Back up a bunch
+        if now - beginTime < 0.35 and foundWall:
+            act = "backward"
         # Turn 90 degrees left initially
-        if now - beginTime < 0.5:
+        elif (now - beginTime < 0.45) or (now - beginTime < 0.75 and foundWall):
             act = "left"
         else:
             if currBumper == "unpressed":
                 # go in arc around obstacle
-                if now - beginTime < 13:
-                    act = "sright"
+                if now - beginTime < 8:
+                    act = "avoidright"
                 # passed obstacle, ram into wall
                 else:
                     act = "forward"
@@ -114,7 +114,7 @@ def reason(publisher):
             
             elif currBumper == "Lpressed" or currBumper == "Rpressed":
                 # adjust around new obstacle
-                if now - beginTime < 12:
+                if now - beginTime < 8:
                     act = "sleft"
                 # its been more than allowed seconds
                 else:
@@ -127,10 +127,11 @@ def reason(publisher):
     # Robot is in docked state
     elif str(currState) == 'DockState':
         now = time.time()
-        if now - beginTime < 0.2:
+        if now - beginTime < 0.15:
             act = 'dock'
         else:
             if not targetNode == "":
+                actionPublisher.publish('undock')
                 act = 'backward'
                 beginTime = now
                 currState = currState.on_event("newdest")
@@ -138,20 +139,21 @@ def reason(publisher):
     # Robot is at a node and has a new destination, adjust bearing than move
     elif str(currState) == 'InterState':
         now = time.time()
-        if now - beginTime < 0.1:
-            progress = progress + 1
-            interNode = path[progress+1]
-        elif now - beginTime < 4:
-            action = int(path[progress])
+        if now - beginTime < 0.15:
+            progress = progress + 2
+            interNode = path[progress]
+        elif now - beginTime < 3:
+            action = int(path[progress-1])
+                
             # Adjust direction you are facing
             if action == -90:
-                if now - beginTime < 0.6:
+                if now - beginTime < 0.45:
                     act = 'left'
             elif action == 180:
-                if now - beginTime < 1.1:
+                if now - beginTime < 0.8:
                     act = 'left'
             elif action == 90:
-                if now - beginTime < 0.6:
+                if now - beginTime < 0.45:
                     act = 'right'
             elif action == 0:
                 if now - beginTime < 1.1:
@@ -188,6 +190,8 @@ def perceive(data, args):
     # Find perception source and update curr status variables
     if msg[0] == "bumper:":
         currBumper = msg[1]
+        if currBumper == 'Lpressed' or currBumper == 'Rpressed':
+            actionPublisher.publish('stop')
     elif msg[0] == "distance:":
         currWallDist = float(msg[1])
         currWallAngle = float(msg[3])
@@ -215,9 +219,8 @@ def setMission(data, args):
     (publisher) = args
     
     # Extract information from data
-    tmp = data.data.split()     # Break up message @ spaces
-    currNode = tmp[1]
-    targetNode = tmp[2]
+    currNode = data.data[0]
+    targetNode = data.data[1]
     
     # Read information on paths and select valid one.
     finder = PathFinder()
@@ -226,7 +229,7 @@ def setMission(data, args):
     
     # Log changes
     rospy.loginfo("Target Destination updated to " + targetNode)
-    rospy.loginfo("Path set to " + path)
+    rospy.loginfo("Path set to " + ''.join(map(str, path)))
     
 
 # Initialize the node, setup the publisher and subscriber

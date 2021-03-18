@@ -13,7 +13,7 @@ from pathFinder import *
 def rosMain():
         # Init the node and setup publisher
         rospy.init_node('RobotTester', anonymous=True)
-        perceptionsPublisher = rospy.Publisher('actions', String, queue_size=10)
+        perceptionsPublisher = rospy.Publisher('perceptions', String, queue_size=10)
         
         while not rospy.is_shutdown():
             inp = raw_input("Type a series of node letters with spaces between (eg 'A B C'): ")
