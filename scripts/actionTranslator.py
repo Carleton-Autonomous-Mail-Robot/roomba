@@ -1,5 +1,11 @@
 #!/usr/bin/env python
 
+# @author: Simon Yacoub and Devon Daley (built on top of previous year's work)
+
+# SUBSCRIBER:   String object from 'actions' node
+# PUBLISHER:    Twist object to 'cmd_vel' node
+#               null object to 'dock' node
+
 import rospy
 import re
 from std_msgs.msg import String
@@ -7,10 +13,7 @@ from std_msgs.msg import Empty
 from geometry_msgs.msg import Twist
 import time
 
-actionBusy = False
-
-# @author: Simon Yacoub and Devon Daley
-
+# This script is meant to take all the action decisions from our reasoner and publish them to the roomba (via cmd_vel)
 
 # Decode and execute the action
 def decodeAction(data, args):

@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 
-# Simple test tool for the user interface.
-
 # @author: Simon Yacoub
 
 import rospy
 from std_msgs.msg import String
 import time
 from pathFinder import *
+
+# Simple test tool for the user interface.
 
 # Main program
 def rosMain():

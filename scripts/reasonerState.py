@@ -1,5 +1,11 @@
 #!/usr/bin/env python
 
+# @author: Devon Daley (with contributions from Gabriel Ciolac, Jozef Tierney, Simon Yacoub)
+
+# SUBSCRIBER:   String object from 'perceptions' node
+#               String object from 'inbox' node
+# PUBLISHER:    String object to 'actions' node
+
 import rospy
 from std_msgs.msg import String
 from states import *
@@ -8,16 +14,13 @@ from pathFinder import *
 import time
 import math
 
-
-#Takes delivery requests and environmental data and publishes actions
-#Subscribes to inbox and perceptions
-#Publishes to actions
+# Takes delivery requests and environmental data, decides the appropriate actions, and publishes actions.
 
 path = ""       # The selected path the robot is following
 targetNode = "" # Target destination is the end goal of the robot and is a global variable
 interNode = ""  # Intermediate destination before the target
 currState = DockState()
-beginTime = time.time()       # Used for telling how long robot is in certain states
+beginTime = time.time()       # Used for telling how long robot is in certain states. <---------- This is a very important variable!!!!!!
 foundWall = True
 progress = 0        # tracks progress of current path. Used as index
 
@@ -127,8 +130,10 @@ def reason(publisher):
     # Robot is in docked state
     elif str(currState) == 'DockState':
         now = time.time()
+        # When first entering this state, immediately dock
         if now - beginTime < 0.15:
             act = 'dock'
+        # Once docked, wait for a target node to be decided on
         else:
             if not targetNode == "":
                 actionPublisher.publish('undock')

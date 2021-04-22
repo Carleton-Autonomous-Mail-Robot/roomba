@@ -1,8 +1,21 @@
-'''
-authored by Devon Daley
-'''
+# @author: Devon Daley
 
 from reader import *
+
+# This is where the path is constructed so that the robot knows which nodes to follow
+
+'''		nodeDistances FORMAT
+(Node1: Node2 Node2Hops Node3 Node3Hops Node4 Node4Hops)
+(Node2: Node1 Node1Hops Node3 Node3Hops Node4 Node4Hops)
+(Node3: Node1 Node1Hops Node2 Node2Hops Node4 Node4Hops)
+(Node4: Node1 Node1Hops Node2 Node2Hops Node3 Node3Hops)
+
+		nodeTraversal FORMAT
+(Node1Node2: Node2Node3 Angle23 Node3Node4 Angle34)
+(Node2Node3: Node1Node2 Angle12 Node3Node4 Angle34)
+(Node3Node4: )
+
+'''
 
 
 class PathFinder():
@@ -19,13 +32,14 @@ class PathFinder():
 	def find_path(self,src,dst):
 		
         # Construct path of nodes without angles
+        # <----------------------------------------------------------------------------REPLACE SECTION WITH PROPER A STAR ALGORITHM
 		distance = int(self.dist[src][dst])		# Distance from destination
 		path = src + ' '
 		while not distance == 0:
 			path = path + self.next_step(path[-2],dst) + ' '
 			distance = distance - 1
         
-        # Calculate necessary angles along path, constructing new dict to store all info so far
+        # Calculate necessary angles between node vectors (eg Node1Node2). Construct new dict to store path with angles to turn in between
 		split = path.split()
 		newpath = []
 		newpath.append(split[0])

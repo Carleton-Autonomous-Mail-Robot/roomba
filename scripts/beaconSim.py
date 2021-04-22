@@ -1,13 +1,16 @@
 #!/usr/bin/env python
 
-# Simple test tool for the user interface.
-
 # @author: Devon Daley
+
+# SUBSCRIBER:   NONE
+# PUBLISHER:    String object to 'perceptions' node.
 
 import rospy
 from std_msgs.msg import String
 import time
 from pathFinder import *
+
+# Simple test tool that allows you to transmit fake beacon location updates. You start by typing out the full path, then it steps through said path as you press enter.
 
 # Main program
 def rosMain():

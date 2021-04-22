@@ -1,16 +1,16 @@
 #!/usr/bin/env python
-'''
 
-@author Gabriel Ciolac
-@last-edit 2021/02/10-22:04
-@contributers Devon Daley
-'''
+# @author: Gabriel Ciolac and Devon Daley
+
+# SUBSCRIBER:   String object from 'beacons' node
+# PUBLISHER:    String object to 'perceptions' node
 
 import rospy
 from bluepy.btle import Scanner
 from std_msgs.msg import String
 from reader import BeaconReader
 
+# This script takes all the beacon distances and uses it to determine which beacon region the robot is located at
 
 nodes = dict()  # used to get the correcponding node letter of MAC. Eg: nodes['A'] = MAC
 proxDistance = 0.4  # How far you have to be from node to be considered in it's region
@@ -95,12 +95,13 @@ def read_bluetooth(str_in, args):
     tmp = zone(dict_macs)
     out = ''
     
-    # Special case imaginary F
+    # Special case imaginary F (because I have no beacon for F, so robot starts there)
     if tmp == 'F' or tmp == 'CF':
         dist = 1 - int(dict_macs[nodes['C']])
         if dist < 0:
             dist = 0
         out = 'node: ' + tmp + ' ' + str(dist)
+        
     # Not Special case
     elif len(tmp) == 2:
         out = 'node: ' + tmp + ' ' + str(dict_macs[nodes[tmp[0]]]) + ' ' + str(dict_macs[nodes[tmp[1]]])

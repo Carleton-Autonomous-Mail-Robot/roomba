@@ -1,16 +1,16 @@
 #!/usr/bin/env python
-'''
 
-@author Gabriel Ciolac
-@last-edit 2021/02/10-21:39
-@contributers 
-'''
+# @author: Gabriel Ciolac
+
+# SUBSCRIBER:   none
+# PUBLISHER:    String object to 'beacons' node
+
 import rospy
 from bluepy.btle import Scanner
 from std_msgs.msg import String
 from reader import BeaconReader
 
-
+# This script is intended to transmit raw beacon distances to the perception translator
 
 averages = dict()
 

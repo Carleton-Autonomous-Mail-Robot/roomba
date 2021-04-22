@@ -1,4 +1,6 @@
-# AUTHORED by Devon Daley
+# @author: Devon Daley
+
+# This is the barebones transitions between different robot states
 
 class State(object):
 	

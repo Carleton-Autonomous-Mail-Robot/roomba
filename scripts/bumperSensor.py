@@ -1,8 +1,15 @@
 #!/usr/bin/env python
 
+# @author: Simon Yacoub
+
+# SUBSCRIBER:   Bumper object from 'bumper' node
+# PUBLISHER:    String object to 'perceptions' node
+
 import rospy
 from ca_msgs.msg import Bumper 
 from std_msgs.msg import String
+
+# This script is intended to detect the bumper sensor and inform the reasoner via 'perceptions'
 
 x = 0
 

@@ -1,15 +1,18 @@
 #!/usr/bin/env python
 
-# takes in inputs from an analog to digital converter connected to IR sensors and converts to cm before
-#     using the two distance measurements to calculate teh robot's distance from the wall
+# @author: Jozef Tierney and Devon Daley
 
-# Author: Jozef Tierney and Devon Daley
+# SUBSCRIBER:   none
+# PUBLISHER:    String object to 'perceptions' node
 
 import time
 import math
 from std_msgs.msg import String
 import rospy
 import sys
+
+# This script takes in inputs from an analog to digital converter connected to IR sensors and converts to cm before
+#     using the two distance measurements to calculate the robot's distance from the wall. It sends wall distance to perceptions node.
 
 # Import the ADS1x15 module.
 import Adafruit_ADS1x15

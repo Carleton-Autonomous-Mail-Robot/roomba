@@ -1,5 +1,10 @@
+
+
+# @author: Devon Daley and Gabriel Ciolac
+
 import os
 
+# This py file is intended to be used by ros scripts to read in information from text documents
 
 class BeaconReader():
 

@@ -1,12 +1,18 @@
 #!/usr/bin/env python
 
+# @author: Gabriel Ciolac
+
+# SUBSCRIBER:   none
+# PUBLISHER:    String object to 'inbox' node
+
 import requests 
 from reader import ServerReader
 import rospy
 from std_msgs.msg import String
 
-SERVER = 'https://web-services-mail.herokuapp.com'
+# This script handles all interactions between the roomba and the server
 
+SERVER = 'https://web-services-mail.herokuapp.com'
 
 def __new_client():
     reader = ServerReader()
