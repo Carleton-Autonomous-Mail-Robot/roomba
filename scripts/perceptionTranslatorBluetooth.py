@@ -1,34 +1,87 @@
 #!/usr/bin/env python
-'''
 
-@author Gabriel Ciolac
-@last-edit 2021/02/10-22:04
-@contributers 
-'''
+# @author: Gabriel Ciolac and Devon Daley
+
+# SUBSCRIBER:   String object from 'beacons' node
+# PUBLISHER:    String object to 'perceptions' node
 
 import rospy
 from bluepy.btle import Scanner
 from std_msgs.msg import String
+from reader import BeaconReader
+
+# This script takes all the beacon distances and uses it to determine which beacon region the robot is located at
+
+nodes = dict()  # used to get the correcponding node letter of MAC. Eg: nodes['A'] = MAC
+proxDistance = 0.4  # How far you have to be from node to be considered in it's region
 
 '''
-Hard coded, needs to be redone
+Assign macs to node letters
+'''
+def set_Zones():
+    global nodes
+    
+    read = BeaconReader()
+    beacons = read.read_beacons()
+    for tmp in beacons:
+        nodes[beacons[tmp][2]] = tmp
+
+'''
+Returns the zone/region the robot is currently located at.
 '''
 def zone(dictionary_macs):
-    macs = dictionary_macs.keys()
-
-    if 'ea:2f:93:a6:98:20' in macs and 'fc:e2:2e:62:9b:3d' in macs:
-        if dictionary_macs['fc:e2:2e:62:9b:3d'] > 5 and dictionary_macs['ea:2f:93:a6:98:20'] > 5:
-            rospy.loginfo('AB')
-    elif 'ea:2f:93:a6:98:20' in macs and dictionary_macs['ea:2f:93:a6:98:20'] < 4.5:
-        rospy.loginfo('A')
-    elif 'fc:e2:2e:62:9b:3d' in macs and dictionary_macs['fc:e2:2e:62:9b:3d'] < 4.5:
-        rospy.loginfo('B')
+    global proxdistance
+    global nodes
+    
+    # Find the closest MAC/node
+    shortest = 100
+    closeMAC = ''
+    closeNode = ''
+    for key in dictionary_macs:
+        if dictionary_macs[key] < shortest:
+            for k in nodes:
+                if nodes[k] == key:
+                    shortest = dictionary_macs[key]
+                    closeMAC = key
+                    closeNode = k
+    
+    # If directly at node
+    if shortest < proxDistance:
+        return closeNode
+    # Special case for when at imaginary node F
+    elif closeNode == 'C' and shortest > 1.6:
+        return 'F'
+    # Special case for when at imaginary region CF
+    elif closeNode == 'C' and shortest < 1.6:
+        return 'CF'
+    # If between nodes (in a region)
     else:
-        rospy.loginfo('Zone was called and nothing happened')
-    
+        # Find the 2nd closest MAC/node
+        shortest2 = 100
+        closeMAC2 = ''
+        closeNode2 = ''
+        for key in dictionary_macs:
+            if dictionary_macs[key] < shortest2 and not key == closeMAC:
+                for k in nodes:
+                    if nodes[k] == key:
+                        shortest2 = dictionary_macs[key]
+                        closeMAC2 = key
+                        closeNode2 = k
+                
+        # Send region result
+        out = ''.join(sorted((closeNode,closeNode2)))
+        return out
 
+
+'''
+Find out bluetooth information, send zone and distance measurements to reasoner
+'''
+def read_bluetooth(str_in, args):
+    global nodes
     
-def read_bluetooth(str_in):
+    (pub) = args
+    set_Zones()
+    
     split_lines = str_in.data.splitlines() #splits the published data on new line
     dict_macs = dict()
     for line in split_lines: #iterates through the lines
@@ -37,16 +90,32 @@ def read_bluetooth(str_in):
 
     if len(dict_macs) == 0:
         return
-    zone(dict_macs)
     
-
-
+    # Publish current zone and corresponding distances
+    tmp = zone(dict_macs)
+    out = ''
+    
+    # Special case imaginary F (because I have no beacon for F, so robot starts there)
+    if tmp == 'F' or tmp == 'CF':
+        dist = 1 - int(dict_macs[nodes['C']])
+        if dist < 0:
+            dist = 0
+        out = 'node: ' + tmp + ' ' + str(dist)
+        
+    # Not Special case
+    elif len(tmp) == 2:
+        out = 'node: ' + tmp + ' ' + str(dict_macs[nodes[tmp[0]]]) + ' ' + str(dict_macs[nodes[tmp[1]]])
+    else:
+        out = 'node: ' + tmp + ' ' + str(dict_macs[nodes[tmp[0]]])
+        
+    rospy.loginfo(out)
+    pub.publish(out)
 
 
 def rosMain():
     pub = rospy.Publisher('perceptions', String, queue_size=20)
     rospy.init_node('bluetoothTranslator', anonymous=True)
-    rospy.Subscriber('beacons', String, read_bluetooth)
+    rospy.Subscriber('beacons', String, read_bluetooth, (pub))
     rate = rospy.Rate(10)
 
     rospy.spin()

@@ -1,60 +1,61 @@
 #!/usr/bin/env python
+
+# @author: Gabriel Ciolac
+
+# SUBSCRIBER:   none
+# PUBLISHER:    String object to 'inbox' node
+
 import requests 
 from reader import ServerReader
 import rospy
 from std_msgs.msg import String
 
+# This script handles all interactions between the roomba and the server
+
+SERVER = 'https://web-services-mail.herokuapp.com'
 
 def __new_client():
     reader = ServerReader()
-    if not reader.read_client_id() == '':
-        rospy.loginfo("Client ID read from file: "+reader.read_client_id())
-        return
-
-    res = __make_request({"status": "good",
-            "opperation": "newClient",
-            "payload": "robot"})
+    res = requests.get(SERVER+"/newClient?robot=yes")
     rospy.loginfo("Client ID Registered: "+str(res.json()['clientID']))
     reader.write_client_id(str(res.json()['clientID']))
     
 
 def __client_info():
-    reader = ServerReader()
-    return reader.read_client_id()
+    return None
 
 def __check_mail():
-    id = __client_info()
-    if id is '':
-        pass
-    else:
-        rospy.loginfo('Making Request under client_id:'+__client_info())
-        res = __make_request({
-            "status": "good",
-            "opperation":"getMessage",
-            "clientID": str(id)
-        })
+    if __client_info() is None:
+        reader = ServerReader()
+        clientID = reader.read_client_id()
+        res = __get_request('getMessage',clientID)
         return res.json()['payload']
-    return None
+
+
+def __get_request(endpoint,clientID):
+    return requests.get(SERVER+"/"+endpoint+'?clientID='+clientID)
+
     
 
-def __make_request(json={}):
+def __make_request(endpoint,clientID,json={}):
     reader = ServerReader()
     url = reader.get_url()
     #rospy.loginfo('Making a request to: '+url)
-    return requests.post(url,json=json)
+    return requests.post(SERVER+'/'+endpoint+'?clientID='+clientID,json=json)
 
 def rosMain():
-    pub = rospy.Publisher('network', String, queue_size=5)
+    pub = rospy.Publisher('inbox', String, queue_size=5)
     rospy.init_node('networkDriver', anonymous=True)
-    rate = rospy.Rate(50)
+    rate = rospy.Rate(10)
     __new_client()
 
     while not rospy.is_shutdown():
-        msg = __check_mail()
-        if msg == "Not Found" or msg is None:
-            continue
-        rospy.loginfo('network('+msg+')')
-        pub.publish(msg)
+        mail = __check_mail()
+        if not mail is None:
+            rospy.loginfo(mail)
+            pub.publish(mail)
+
+        rate.sleep()
 
 if __name__ == '__main__':
     try:

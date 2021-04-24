@@ -1,15 +1,18 @@
 #!/usr/bin/env python
 
-# takes in inputs from an analog to digital converter connected to IR sensors and converts to cm before
-#     using the two distance measurements to calculate teh robot's distance from the wall
+# @author: Jozef Tierney and Devon Daley
 
-# Author: Jozef Tierney and Devon Daley
+# SUBSCRIBER:   none
+# PUBLISHER:    String object to 'perceptions' node
 
 import time
 import math
 from std_msgs.msg import String
 import rospy
 import sys
+
+# This script takes in inputs from an analog to digital converter connected to IR sensors and converts to cm before
+#     using the two distance measurements to calculate the robot's distance from the wall. It sends wall distance to perceptions node.
 
 # Import the ADS1x15 module.
 import Adafruit_ADS1x15
@@ -41,9 +44,8 @@ def distance(dis1, dis2):
     b = math.sin(B*math.pi/180)*dis2/math.sin(A*math.pi/180)
     #print("Distance from wall is "+ str(b) +" centimeters")
     #print("Offset angle is "+ str(180 - A) +" degrees.")
-    
     # When too close to wall, returns constant 10.2046768063
-    if dis1 == 10.2046768063 or dis2 == 10.2046768063:
+    if dis1 < 10.21 or dis2 < 10.21:
         b=1
         
     out = "distance: " + str(abs(b)) + " angle: " + str(180 - A)
@@ -90,8 +92,7 @@ def calculate():
     #check if the values are in the range and valid, this will likely need to be tuned in the future
     if values[0] < avg1*1.5 and values[0] > avg1*0.5:
         if values[1] < avg2*1.5 and values[1] > avg2*0.5:
-            if valid:
-                return distance(values[0], values[1])
+            return distance(values[0], values[1])
     
     return -1
     

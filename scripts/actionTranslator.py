@@ -1,5 +1,11 @@
 #!/usr/bin/env python
 
+# @author: Simon Yacoub and Devon Daley (built on top of previous year's work)
+
+# SUBSCRIBER:   String object from 'actions' node
+# PUBLISHER:    Twist object to 'cmd_vel' node
+#               null object to 'dock' node
+
 import rospy
 import re
 from std_msgs.msg import String
@@ -7,10 +13,7 @@ from std_msgs.msg import Empty
 from geometry_msgs.msg import Twist
 import time
 
-actionBusy = False
-
-# @author: Simon Yacoub and Devon Daley
-
+# This script is meant to take all the action decisions from our reasoner and publish them to the roomba (via cmd_vel)
 
 # Decode and execute the action
 def decodeAction(data, args):
@@ -22,43 +25,29 @@ def decodeAction(data, args):
     rospy.loginfo("Action: " + action)
     
     #handle basic movement commands from actions topic
-    if(action == "forward"):
-        actionMessage = getTwistMesg("forward")
-    elif(action == "backward"):
-        actionMessage = getTwistMesg("backward")
-    elif(action == "left"): #Does a 90 degree turn left (stops robot first)
+    actionMessage = getTwistMesg(action)
+    if(action == "left"): #Does a 45 degree turn left (stops robot first)
         actionMessage = getTwistMesg("left")
-        decodeAction("stop", args)
+        tmp = String()
+        tmp.data = "stop"
+        decodeAction(tmp, args)
         drivePublisher.publish(actionMessage)
-        drivePublisher.publish(actionMessage)
-    elif(action == "right"): #does 90 degree turn right (stops robot first)
+    elif(action == "right"): #Does 45 degree turn right (stops robot first)
         actionMessage = getTwistMesg("right")
-        decodeAction("stop", args)
+        tmp = String()
+        tmp.data = "stop"
+        decodeAction(tmp, args)
         drivePublisher.publish(actionMessage)
-        drivePublisher.publish(actionMessage)
-    elif(action == "sright"): #small r motion for wall following
-        actionMessage = getTwistMesg("sright")
-        drivePublisher.publish(actionMessage)
-    elif(action == "sleft"): #small l motion for wall following
-        actionMessage = getTwistMesg("sleft")
-        drivePublisher.publish(actionMessage)
-    elif(action == "bleft"):    # big left motion to make space from wall
-        actionMessage = getTwistMesg("bleft")
-        drivePublisher.publish(actionMessage)
-    elif(action == "stop"): #stops the robot
-        actionMessage = getTwistMesg("stop")
-    else:
-        actionMessage = getTwistMesg("idle")
-
-    #publish action
-    drivePublisher.publish(actionMessage)
 
     # Handle the docking station cases
-    if action == "station(dock)":
+    if action == "dock":
         dockPublisher.publish()
-    elif action == "station(undock)":
-        undockPublisher.publish()   # Publish to the undock topic
-        
+    elif action == 'undock':
+        undockPublisher.publish()
+    else:
+        #publish action
+        drivePublisher.publish(actionMessage)
+    
         
 '''
 Get a Twist message which consists of a linear and angular component which can be negative or positive.
@@ -76,7 +65,7 @@ def getTwistMesg(action):
     message = Twist()
     
     if action == "forward":
-        message.linear.x = 0.2
+        message.linear.x = 0.1
         message.angular.z = 0
     elif action == "backward":
         message.linear.x = -0.2
@@ -88,11 +77,14 @@ def getTwistMesg(action):
         message.linear.x = 0
         message.angular.z = -4
     elif action == "sleft":
-        message.linear.x = 0.1
-        message.angular.z = 0.25
+        message.linear.x = 0.05
+        message.angular.z = 0.5
     elif action == "sright":
-        message.linear.x = 0.1
-        message.angular.z = -0.25
+        message.linear.x = 0.05
+        message.angular.z = -0.5
+    elif action == "avoidright":
+        message.linear.x = 0.08
+        message.angular.z = -0.5
     elif action == "bleft":
         message.linear.x = -0.1
         message.angular.z = 0.5
